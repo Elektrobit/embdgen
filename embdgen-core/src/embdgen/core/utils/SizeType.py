@@ -53,7 +53,7 @@ class SizeType:
 
     _bytes: Optional[int]
 
-    def __init__(self, bytes_val = None) -> None:
+    def __init__(self, bytes_val=None) -> None:
         self._bytes = bytes_val
 
     @classmethod
@@ -76,8 +76,8 @@ class SizeType:
         ...
         Exception: Invalid string:
         """
-        text = re.sub(r'\s', '', text)
-        matches = re.match(r'(0x)?([0-9a-fA-F]+?)((?:[MkG]?B)|(?:S))?$', text)
+        text = re.sub(r"\s", "", text)
+        matches = re.match(r"(0x)?([0-9a-fA-F]+?)((?:[MkG]?B)|(?:S))?$", text)
         if not matches:
             raise Exception(f"Invalid string: {text}")
 
@@ -149,41 +149,40 @@ class SizeType:
         """
         return self._bytes is None
 
-    def __eq__(self, other: 'SizeType') -> bool:
+    def __eq__(self, other: "SizeType") -> bool:
         return self._bytes == other._bytes
 
-    def __ne__(self, other: 'SizeType') -> bool:
+    def __ne__(self, other: "SizeType") -> bool:
         return self._bytes != other._bytes
 
-    def __lt__(self, other: 'SizeType') -> bool:
+    def __lt__(self, other: "SizeType") -> bool:
         if self.is_undefined:
             return False
         if other.is_undefined:
             return True
         return self.bytes < other.bytes
 
-    def __gt__(self, other: 'SizeType') -> bool:
+    def __gt__(self, other: "SizeType") -> bool:
         if other.is_undefined:
             return False
         if self.is_undefined:
             return not other.is_undefined
         return self.bytes > other.bytes
 
-    def __le__(self, other: 'SizeType') -> bool:
+    def __le__(self, other: "SizeType") -> bool:
         return self == other or self < other
 
-    def __ge__(self, other: 'SizeType') -> bool:
+    def __ge__(self, other: "SizeType") -> bool:
         return self == other or self > other
 
-
-    def __add__(self, other: 'SizeType') -> 'SizeType':
+    def __add__(self, other: "SizeType") -> "SizeType":
         if self.is_undefined:
             return SizeType(other._bytes)
         if other.is_undefined:
             return SizeType(self._bytes)
         return SizeType(self._bytes + other._bytes)
 
-    def __sub__(self, other: 'SizeType') -> 'SizeType':
+    def __sub__(self, other: "SizeType") -> "SizeType":
         if self.is_undefined:
             if other.is_undefined:
                 return SizeType(None)
