@@ -10,8 +10,7 @@ from embdgen.core.content.BaseContent import BaseContent
 
 
 class FilesContentProvider(BaseContent, abc.ABC):
-    """Base class for all content providers, that provide a list of files
-    """
+    """Base class for all content providers, that provide a list of files"""
 
     _fakeroot: FakeRoot
 
