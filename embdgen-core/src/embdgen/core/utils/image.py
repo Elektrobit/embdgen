@@ -9,14 +9,16 @@ from pathlib import Path
 import tempfile
 from fallocate import fallocate, FALLOC_FL_PUNCH_HOLE, FALLOC_FL_KEEP_SIZE
 
-def create_empty_image(filename: str, size: int):
+
+def create_empty_image(filename: str, size: int) -> None:
     """
     Create an empty sparse (if possible) file
     """
     with open(filename, "wb") as out_file:
         out_file.truncate(size)
 
-def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: int=None):
+
+def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: int = None) -> None:
     """
     Copy sparse from in_file to out_file up to size bytes.
     This does not necessarily create the minimum sparse file.
