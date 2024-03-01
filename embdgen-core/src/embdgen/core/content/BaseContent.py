@@ -12,7 +12,7 @@ class BaseContent(abc.ABC):
 
     size: SizeType
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Create a new empty content
         """

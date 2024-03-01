@@ -8,5 +8,5 @@ from embdgen.core.region import BaseRegion
 
 class Factory(FactoryBase[BaseRegion]):
     @classmethod
-    def load(cls):
+    def load(cls) -> dict[Any, Any]:
         return cls.load_plugins(region, BaseRegion, 'PART_TYPE')

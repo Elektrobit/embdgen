@@ -27,7 +27,7 @@ class Meta:
         return getattr(obj, cls._META_KEY, {})
 
     @classmethod
-    def set(cls, obj: Type, value: "Meta"):
+    def set(cls, obj: Type, value: "Meta") -> None:
         name = value.name
         attr = cls.get(obj)
         if cls._META_KEY not in obj.__dict__:  # Test if the attribute is defined on the instance, not the parents
@@ -51,7 +51,7 @@ def try_read_doc(cls: Type, name: str) -> str:
 CT = TypeVar("CT")
 
 
-def Config(name: str, doc: str = "", optional=False):
+def Config(name: str, doc: str = "", optional=False) -> Callable[..., type[CT]]:
     """
     Metadata decorator for classes for the BaseFactory
     """

@@ -12,5 +12,5 @@ class Factory(FactoryBase[BaseLabel]):
     """
 
     @classmethod
-    def load(cls):
+    def load(cls) -> dict[Any, Any]:
         return cls.load_plugins(label, BaseLabel, "LABEL_TYPE")

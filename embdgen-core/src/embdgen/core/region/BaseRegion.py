@@ -55,7 +55,7 @@ class BaseRegion(abc.ABC):
         """
 
     @abc.abstractmethod
-    def write(self, out_file: io.BufferedIOBase):
+    def write(self, out_file: io.BufferedIOBase) -> None:
         """
         Writes this region to the current position in ``out_file``
         """

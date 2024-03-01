@@ -15,7 +15,7 @@ class FilesContentProvider(BaseContent, abc.ABC):
 
     _fakeroot: FakeRoot
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._fakeroot = FakeRoot(get_temp_file())
 

@@ -31,15 +31,15 @@ class BaseLabel(abc.ABC):
     Name of the partitions marked as 'bootable'
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.parts = []
 
-    def prepare(self):
+    def prepare(self) -> None:
         for part in self.parts:
             part.prepare()
 
         self.parts.sort(key=lambda x: x.start)
-        cur_offset = SizeType(0)
+        cur_offset: SizeType = SizeType(bytes_val=0)
 
         for part in self.parts:
             if part.start.is_undefined:
@@ -48,19 +48,19 @@ class BaseLabel(abc.ABC):
 
         self._validate_parts()
 
-    def _validate_parts(self):
+    def _validate_parts(self) -> None:
         self.parts.sort(key=lambda x: x.start)
-        cur_offset = SizeType(0)
-        last_part = None
+        cur_offset: SizeType = SizeType(0)
+        last_part: BaseRegion | None = None
         for part in self.parts:
             if part.start < cur_offset:
                 raise Exception(f"Part '{part.name}' overlapps with '{last_part.name}'")
             last_part = part
             cur_offset += part.size
 
-    def _create_partition_table(self, filename: Path, ptType: str):
-        device = parted.getDevice(filename.as_posix())
-        disk = parted.freshDisk(device, ptType)
+    def _create_partition_table(self, filename: Path, ptType: str) -> None:
+        device: parted.Device = parted.getDevice(path=filename.as_posix())
+        disk: parted.Disk = parted.freshDisk(device=device, ty=ptType)
 
         for part in self.parts:
             if not isinstance(part, PartitionRegion):
@@ -70,7 +70,7 @@ class BaseLabel(abc.ABC):
                 disk=disk,
                 type=parted.PARTITION_NORMAL,
                 geometry=geometry,
-                fs=parted.FileSystem(part.fstype, geometry=geometry),
+                fs=parted.FileSystem(type=part.fstype, geometry=geometry),
             )
 
             if ptType == "msdos":
@@ -82,8 +82,8 @@ class BaseLabel(abc.ABC):
 
         disk.commit()
 
-    def create(self, filename: Path):
-        size = self.parts[-1].start + self.parts[-1].size
+    def create(self, filename: Path) -> None:
+        size: SizeType = self.parts[-1].start + self.parts[-1].size
         create_empty_image(filename, size.bytes)
 
         self.create_partition_table(filename)
@@ -93,5 +93,5 @@ class BaseLabel(abc.ABC):
                 part.write(f)
 
     @abc.abstractmethod
-    def create_partition_table(self, filename: Path):
+    def create_partition_table(self, filename: Path) -> None:
         pass

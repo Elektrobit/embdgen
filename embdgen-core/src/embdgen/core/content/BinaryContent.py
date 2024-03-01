@@ -22,17 +22,17 @@ class BinaryContent(BaseContent):
             self._prepare_result()
         return self._result_file
 
-    def write(self, file: io.BufferedIOBase):
+    def write(self, file: io.BufferedIOBase) -> None:
         if self._result_file:
             with self.result_file.open("rb") as in_file:
                 copy_sparse(file, in_file)
         else:
             self.do_write(file)
 
-    def _prepare_result(self):
+    def _prepare_result(self) -> None:
         with self._result_file.open("wb") as f:
             self.do_write(f)
 
     @abc.abstractmethod
-    def do_write(self, file: io.BufferedIOBase):
+    def do_write(self, file: io.BufferedIOBase) -> None:
         pass

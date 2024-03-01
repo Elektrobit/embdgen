@@ -58,7 +58,7 @@ class SizeType:
         self._bytes = bytes_val
 
     @classmethod
-    def parse(cls, text: str):
+    def parse(cls, text: str) -> Any:
         """
         Parses a size from the a string representation
 
@@ -97,14 +97,14 @@ class SizeType:
         return cls(int_value)
 
     @property
-    def is_sector_aligned(self):
+    def is_sector_aligned(self) -> Any:
         """
         Return true, if this is aligned to a sector number
         """
         return self._bytes % BYTES_PER_SECTOR == 0
 
     @property
-    def sectors(self):
+    def sectors(self) -> Any:
         """
         The sector number of this
 
@@ -115,14 +115,14 @@ class SizeType:
         return self._bytes // BYTES_PER_SECTOR
 
     @property
-    def bytes(self):
+    def bytes(self) -> int | None:
         """
         The number of bytes
         """
         return self._bytes
 
     @bytes.setter
-    def bytes(self, bytes_val: int):
+    def bytes(self, bytes_val: int) -> None:
         self._bytes = bytes_val
 
     @property
@@ -176,14 +176,14 @@ class SizeType:
     def __ge__(self, other: "SizeType") -> bool:
         return self == other or self > other
 
-    def __add__(self, other: "SizeType") -> "SizeType":
+    def __add__(self, other: "SizeType") -> SizeType:
         if self.is_undefined:
             return SizeType(other._bytes)
         if other.is_undefined:
             return SizeType(self._bytes)
         return SizeType(self._bytes + other._bytes)
 
-    def __sub__(self, other: "SizeType") -> "SizeType":
+    def __sub__(self, other: "SizeType") -> SizeType:
         if self.is_undefined:
             if other.is_undefined:
                 return SizeType(None)

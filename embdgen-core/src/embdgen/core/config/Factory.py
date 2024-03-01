@@ -8,5 +8,5 @@ from embdgen.core.config.BaseConfig import BaseConfig
 
 class Factory(FactoryBase[BaseConfig]):
     @classmethod
-    def load(cls):
+    def load(cls) -> dict[Any, Any]:
         return cls.load_plugins(config, BaseConfig, "CONFIG_TYPE")
