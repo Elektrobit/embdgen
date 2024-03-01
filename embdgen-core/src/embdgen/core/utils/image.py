@@ -44,8 +44,8 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: i
         """
         return block == zero_block
 
-    if size == 0:
-        return
+    if not size:
+        return None
 
     to_copy = size
     while to_copy > 0:
