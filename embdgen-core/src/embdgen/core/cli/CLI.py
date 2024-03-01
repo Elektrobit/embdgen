@@ -25,18 +25,15 @@ class CLI:
         loaders = []
         for name, _ in self.factory.class_map().items():
             loaders.append(name)
-        parser.add_argument("-x", "--format", choices=loaders,
-                            help="Select the config format (default is autodetect)")
+        parser.add_argument("-x", "--format", choices=loaders, help="Select the config format (default is autodetect)")
 
     def build_parser(self) -> ArgumentParser:
-        parser = ArgumentParser(
-            description="embdgen - EMBedded Disk GENerator"
-        )
+        parser = ArgumentParser(description="embdgen - EMBedded Disk GENerator")
         self.register_config_loaders(parser)
-        parser.add_argument("-o", "--output", default="image.raw", type=Path,
-                            help="Output file name (default: image.raw)")
-        parser.add_argument("-t", "--tempdir", default="tmp", type=Path,
-                            help="Temporary directory (default: tmp)")
+        parser.add_argument(
+            "-o", "--output", default="image.raw", type=Path, help="Output file name (default: image.raw)"
+        )
+        parser.add_argument("-t", "--tempdir", default="tmp", type=Path, help="Temporary directory (default: tmp)")
         parser.add_argument("filename", type=Path, help="Config file name")
         return parser
 

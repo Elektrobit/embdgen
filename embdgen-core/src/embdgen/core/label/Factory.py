@@ -12,4 +12,4 @@ class Factory(FactoryBase[BaseLabel]):
 
     @classmethod
     def load(cls):
-        return cls.load_plugins(label, BaseLabel, 'LABEL_TYPE')
+        return cls.load_plugins(label, BaseLabel, "LABEL_TYPE")
