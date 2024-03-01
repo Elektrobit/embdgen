@@ -5,6 +5,7 @@ from embdgen.plugins import config
 from ..utils.class_factory import FactoryBase
 from .BaseConfig import BaseConfig
 
+
 class Factory(FactoryBase[BaseConfig]):
     @classmethod
     def load(cls):

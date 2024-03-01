@@ -8,6 +8,7 @@ from importlib import import_module
 from types import ModuleType
 from dataclasses import dataclass
 
+
 @dataclass
 class Meta():
     """
@@ -78,6 +79,8 @@ def Config(name: str, doc="", optional=False):
 
 
 T = TypeVar("T")
+
+
 class FactoryBase(abc.ABC, Generic[T]):
     __class_map = None
     ALLOW_SUBCLASS = False
