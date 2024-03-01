@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 from ..config.Factory import Factory
 from ..utils.image import get_temp_path
 
+
 @dataclass(init=False)
 class Arguments:
     format: Optional[str]
@@ -16,10 +17,11 @@ class Arguments:
     tempdir: Path
     filename: Path
 
+
 class CLI:
     factory = Factory()
 
-    def register_config_loaders(self, parser: ArgumentParser):
+    def register_config_loaders(self, parser: ArgumentParser) -> None:
         loaders = []
         for name, _ in self.factory.class_map().items():
             loaders.append(name)
@@ -28,7 +30,7 @@ class CLI:
 
     def build_parser(self) -> ArgumentParser:
         parser = ArgumentParser(
-            description = "embdgen - EMBedded Disk GENerator"
+            description="embdgen - EMBedded Disk GENerator"
         )
         self.register_config_loaders(parser)
         parser.add_argument("-o", "--output", default="image.raw", type=Path,
@@ -38,7 +40,7 @@ class CLI:
         parser.add_argument("filename", type=Path, help="Config file name")
         return parser
 
-    def run(self, args: Sequence[str] = None):
+    def run(self, args: Sequence[str] = None) -> None:
         options = self.build_parser().parse_args(args, namespace=Arguments())
         if not options.filename.exists():
             self.fatal(f"The config file {options.filename} does not exist")
@@ -62,12 +64,11 @@ class CLI:
         print(f"\nWriting image to {options.output}")
         label.create(options.output)
 
-    def probe_format(self, filename: Path):
+    def probe_format(self, filename: Path) -> None:
         for name, typ in self.factory.class_map().items():
             if typ.probe(filename):
                 return name
         return None
 
-
-    def fatal(self, msg: str):
+    def fatal(self, msg: str) -> None:
         sys.exit(f"FATAL: {msg}")
