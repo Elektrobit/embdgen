@@ -3,5 +3,9 @@
 from typing import Sequence
 from .CLI import CLI
 
-def cli(args: Sequence[str] = None):
+
+def cli(args: Sequence[str] = None) -> None:
+    """
+    Run command line interface.
+    """
     CLI().run(args)
