@@ -9,4 +9,4 @@ from .BaseConfig import BaseConfig
 class Factory(FactoryBase[BaseConfig]):
     @classmethod
     def load(cls):
-        return cls.load_plugins(config, BaseConfig, 'CONFIG_TYPE')
+        return cls.load_plugins(config, BaseConfig, "CONFIG_TYPE")
