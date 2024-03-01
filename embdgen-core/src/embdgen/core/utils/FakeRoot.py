@@ -7,7 +7,8 @@ from pathlib import Path
 
 import subprocess
 
-class FakeRoot():
+
+class FakeRoot:
     """
     Encapsulate usage of fakeroot command line tool
 

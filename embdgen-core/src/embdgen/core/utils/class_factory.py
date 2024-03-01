@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Meta():
+class Meta:
     """
     Object meta information for factory classes
     """

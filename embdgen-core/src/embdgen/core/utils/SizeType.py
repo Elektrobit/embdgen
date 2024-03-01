@@ -3,13 +3,9 @@
 from typing import Optional
 import re
 
-BYTES_PER_SECTOR = 512
+BYTES_PER_SECTOR = 0x200
+MULTIPLIER = {"k": 0x400, "M": 0x100000, "G": 0x40000000}
 
-MULTIPLIER = {
-    'k': 1024,
-    'M': 1024 * 1024,
-    'G': 1024 * 1024 * 1024
-}
 
 class SizeType():
     """A type to specify sizes in bytes and sectors
