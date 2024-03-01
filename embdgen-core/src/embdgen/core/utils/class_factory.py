@@ -22,11 +22,11 @@ class Meta():
     optional: bool = False
 
     @classmethod
-    def get(cls, obj: Type) -> Dict[str, 'Meta']:
+    def get(cls, obj: Type) -> Dict[str, "Meta"]:
         return getattr(obj, cls._META_KEY, {})
 
     @classmethod
-    def set(cls, obj: Type, value: 'Meta'):
+    def set(cls, obj: Type, value: "Meta"):
         name = value.name
         attr = cls.get(obj)
         if cls._META_KEY not in obj.__dict__: # Test if the attribute is defined on the instance, not the parents
