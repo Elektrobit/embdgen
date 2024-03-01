@@ -1,12 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import abc
+
 from . import BaseRegion
 from ..content import BaseContent
-
 from ..utils.class_factory import Config
 
-@Config('content')
+
+@Config("content")
 class BaseContentRegion(BaseRegion, abc.ABC):
     content: BaseContent = None
 
@@ -20,7 +21,5 @@ class BaseContentRegion(BaseRegion, abc.ABC):
 
         super().prepare()
 
-
     def __repr__(self) -> str:
-        return (f"{self.start.hex_bytes} - {(self.start + self.size).hex_bytes} Part {self.name}\n" +
-                f"    {self.content}")
+        return f"{self.start.hex_bytes} - {(self.start + self.size).hex_bytes} Part {self.name}\n    {self.content}"
