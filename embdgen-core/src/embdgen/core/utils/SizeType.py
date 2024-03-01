@@ -7,7 +7,7 @@ BYTES_PER_SECTOR = 0x200
 MULTIPLIER = {"k": 0x400, "M": 0x100000, "G": 0x40000000}
 
 
-class SizeType():
+class SizeType:
     """A type to specify sizes in bytes and sectors
 
     This class can automatically parse string input as decimal
