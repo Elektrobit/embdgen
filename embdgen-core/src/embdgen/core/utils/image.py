@@ -28,6 +28,7 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: i
     be implemented very fast in python, but checking if an arbitrarily long block is
     empty is not very efficient.
     """
+    blks = 0x1000
     cur_pos = in_file.tell()
     max_size = in_file.seek(0, io.SEEK_END) - cur_pos
     in_file.seek(cur_pos)
@@ -37,9 +38,9 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: i
     elif size > max_size:
         raise Exception(f"Trying to copy {size} B, but the file has only {max_size} B left")
 
+    zero_block = b"\0" * blks
 
-    zero_block = b"\0" * 4096
-    def is_zero(block):
+    def is_zero(block) -> bool:
         """
         Note: if the block size is less than 4096, this will return False, but it just
         makes a part of the file non-sparse, which does not matter
@@ -51,7 +52,7 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: i
 
     to_copy = size
     while to_copy > 0:
-        block_size = min(4096, to_copy)
+        block_size = min(blks, to_copy)
         data = in_file.read(block_size)
         to_copy -= len(data)
         if not is_zero(data):

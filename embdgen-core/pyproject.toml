@@ -37,6 +37,10 @@ embdgen = "embdgen.core.cli:cli"
 [tool.pylint.format]
 max-line-length = 120
 
+[tool.black]
+skip-magic-trailing-comma = false
+line-length = 120
+
 [tool.pylint.'MESSAGES CONTROL']
 disable = [
     'missing-module-docstring',
