@@ -13,5 +13,5 @@ class Factory(FactoryBase[BaseContent]):
     """
 
     @classmethod
-        return cls.load_plugins(content, BaseContent, 'CONTENT_TYPE')
     def load(cls) -> dict[Any, Any]:
+        return cls.load_plugins(content, BaseContent, "CONTENT_TYPE")
