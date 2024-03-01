@@ -35,13 +35,11 @@ class FakeRoot():
     def savefile(self) -> Path:
         return self._savefile
 
-    def run(self, args, **kwargs):
-        check = True
-        if "check" in kwargs:
-            check = kwargs["check"]
-            del kwargs["check"]
+    def run(self, args, **kwargs) -> Any:
+        check: bool = bool(kwargs.get("check", False))
+        kwargs.pop("check", None)
 
-        safe_file = []
+        safe_file: list[str] = []
         if self._parent and self._parent.savefile.exists():
             safe_file = ["-i", self._parent.savefile]
         elif self._savefile.exists():
