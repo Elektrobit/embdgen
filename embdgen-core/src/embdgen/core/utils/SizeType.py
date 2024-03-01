@@ -8,7 +8,8 @@ MULTIPLIER = {"k": 0x400, "M": 0x100000, "G": 0x40000000}
 
 
 class SizeType:
-    """A type to specify sizes in bytes and sectors
+    """
+    A type to specify sizes in bytes and sectors
 
     This class can automatically parse string input as decimal
     or hexadecimal with a unit.
@@ -57,7 +58,8 @@ class SizeType:
 
     @classmethod
     def parse(cls, text: str):
-        """Parses a size from the a string representation
+        """
+        Parses a size from the a string representation
 
         Examples:
 
@@ -72,7 +74,7 @@ class SizeType:
         >>> SizeType.parse("").bytes
         Traceback (most recent call last):
         ...
-        Exception: Invalid string: 
+        Exception: Invalid string:
         """
         text = re.sub(r'\s', '', text)
         matches = re.match(r'(0x)?([0-9a-fA-F]+?)((?:[MkG]?B)|(?:S))?$', text)
@@ -95,13 +97,16 @@ class SizeType:
 
     @property
     def is_sector_aligned(self):
-        """Return true, if this is aligned to a sector number"""
+        """
+        Return true, if this is aligned to a sector number
+        """
         return self._bytes % BYTES_PER_SECTOR == 0
 
     @property
     def sectors(self):
-        """The sector number of this
-        
+        """
+        The sector number of this
+
         :raises: Exception if not sector aligned
         """
         if not self.is_sector_aligned:
@@ -110,7 +115,9 @@ class SizeType:
 
     @property
     def bytes(self):
-        """The number of bytes"""
+        """
+        The number of bytes
+        """
         return self._bytes
 
     @bytes.setter
@@ -120,7 +127,7 @@ class SizeType:
     @property
     def hex_bytes(self) -> str:
         """The number of bytes as hex string with at least eight digits
-        
+
         >>> SizeType(0x100).hex_bytes
         '0x00000100'
         >>> SizeType().hex_bytes
@@ -134,7 +141,7 @@ class SizeType:
     @property
     def is_undefined(self) -> bool:
         """Returns true, if no value is set
-        
+
         >>> SizeType().is_undefined
         True
         >>> SizeType(0).is_undefined
