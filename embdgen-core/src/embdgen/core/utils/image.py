@@ -3,10 +3,11 @@
 """
 Utility functions for working with images
 """
-import io
-import os
-from pathlib import Path
 import tempfile
+import os
+import io
+
+from pathlib import Path
 from fallocate import fallocate, FALLOC_FL_PUNCH_HOLE, FALLOC_FL_KEEP_SIZE
 
 

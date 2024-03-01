@@ -45,11 +45,16 @@ class FakeRoot():
         elif self._savefile.exists():
             safe_file = ["-i", self.savefile]
 
-        return subprocess.run([
-            "fakeroot",
-            "-u", # Use -u, to prevent that all files are created as root
-            "-s", self._savefile,
-            *safe_file,
-            "--",
-            *args
-        ], check=check, **kwargs)
+        return subprocess.run(
+            [
+                "fakeroot",
+                "-u",  # Use -u, to prevent that all files are created as root
+                "-s",
+                self._savefile,
+                *safe_file,
+                "--",
+                *args,
+            ],
+            check=check,
+            **kwargs,
+        )
