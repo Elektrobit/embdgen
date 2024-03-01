@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
-from typing import Optional
+from __future__ import annotations
+from typing import Any, Optional
 
 from pathlib import Path
 import subprocess
@@ -22,9 +23,9 @@ class FakeRoot():
     A fakeroot can reuse the state file of another fakeroot without modifying it.
     """
     _savefile: Path
-    _parent: Optional["FakeRoot"]
+    _parent: Optional[FakeRoot]
 
-    def __init__(self, savefile: Path, parent: "FakeRoot" = None):
+    def __init__(self, savefile: Path, parent: "FakeRoot" = None) -> None:
         self._savefile = savefile
         self._parent = parent
         if parent and parent._parent:
