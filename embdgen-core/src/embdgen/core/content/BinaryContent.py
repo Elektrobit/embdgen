@@ -5,8 +5,7 @@ import io
 import abc
 
 from embdgen.core.utils.image import get_temp_file, copy_sparse
-
-from .BaseContent import BaseContent
+from embdgen.core.content.BaseContent import BaseContent
 
 
 class BinaryContent(BaseContent):

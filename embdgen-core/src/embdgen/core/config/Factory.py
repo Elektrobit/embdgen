@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
+from typing import Any
 from embdgen.plugins import config
-
-from ..utils.class_factory import FactoryBase
-from .BaseConfig import BaseConfig
+from embdgen.core.utils.class_factory import FactoryBase
+from embdgen.core.config.BaseConfig import BaseConfig
 
 
 class Factory(FactoryBase[BaseConfig]):

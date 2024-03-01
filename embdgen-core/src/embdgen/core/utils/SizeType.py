@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
-from typing import Optional
+from __future__ import annotations
+from typing import Any, Optional
 import re
 
 BYTES_PER_SECTOR = 0x200

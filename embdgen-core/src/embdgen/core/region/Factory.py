@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
+from typing import Any
 from embdgen.plugins import region
+from embdgen.core.utils.class_factory import FactoryBase
+from embdgen.core.region import BaseRegion
 
-from ..utils.class_factory import FactoryBase
-from . import BaseRegion
 
 class Factory(FactoryBase[BaseRegion]):
     @classmethod

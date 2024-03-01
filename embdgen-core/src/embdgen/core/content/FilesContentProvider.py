@@ -6,7 +6,8 @@ from pathlib import Path
 
 from embdgen.core.utils.FakeRoot import FakeRoot
 from embdgen.core.utils.image import get_temp_file
-from .BaseContent import BaseContent
+from embdgen.core.content.BaseContent import BaseContent
+
 
 class FilesContentProvider(BaseContent, abc.ABC):
     """Base class for all content providers, that provide a list of files

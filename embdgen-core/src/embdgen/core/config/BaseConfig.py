@@ -2,7 +2,6 @@
 
 from pathlib import Path
 from abc import ABC, abstractmethod
-
 from embdgen.core.label import BaseLabel
 
 

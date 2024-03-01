@@ -2,9 +2,9 @@
 
 import abc
 
-from . import BaseRegion
-from ..content import BaseContent
-from ..utils.class_factory import Config
+from embdgen.core.region import BaseRegion
+from embdgen.core.content import BaseContent
+from embdgen.core.utils.class_factory import Config
 
 
 @Config("content")

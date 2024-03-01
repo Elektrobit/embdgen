@@ -3,8 +3,8 @@
 import abc
 import io
 
-from ..utils.SizeType import SizeType
-from ..utils.class_factory import Config
+from embdgen.core.utils.SizeType import SizeType
+from embdgen.core.utils.class_factory import Config
 
 
 @Config("name")

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
-from .BaseContent import BaseContent
-from .BinaryContent import BinaryContent
-from .Factory import Factory
+from embdgen.core.content.BaseContent import BaseContent
+from embdgen.core.content.BinaryContent import BinaryContent
+from embdgen.core.content.Factory import Factory

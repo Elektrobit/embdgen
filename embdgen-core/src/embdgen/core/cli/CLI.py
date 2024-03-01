@@ -6,8 +6,8 @@ from pathlib import Path
 from dataclasses import dataclass
 from argparse import ArgumentParser
 
-from ..config.Factory import Factory
-from ..utils.image import get_temp_path
+from embdgen.core.config.Factory import Factory
+from embdgen.core.utils.image import get_temp_path
 
 
 @dataclass(init=False)

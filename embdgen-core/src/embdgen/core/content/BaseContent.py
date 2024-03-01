@@ -2,7 +2,7 @@
 
 import abc
 
-from ..utils.SizeType import SizeType
+from embdgen.core.utils.SizeType import SizeType
 
 
 class BaseContent(abc.ABC):
