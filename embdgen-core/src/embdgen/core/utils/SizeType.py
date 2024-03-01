@@ -25,7 +25,7 @@ class SizeType:
     True
 
 
-    All comparison functions (``<,<=,>,>=,==,!=``) are implemented, 
+    All comparison functions (``<,<=,>,>=,==,!=``) are implemented,
     with ``None`` treaded as bigger than any non-``None`` value.
 
     >>> SizeType(1) > SizeType(0)
