@@ -13,8 +13,8 @@ name = "embdgen-core"
 dynamic = ["version"]
 
 authors = [
-  { name="AOX Technologies GmbH", email="info@aox.de" },
-  { name="Elektrobit GmbH", email="info@elektrobit.com" },
+    { name = "AOX Technologies GmbH", email = "info@aox.de" },
+    { name = "Elektrobit GmbH", email = "info@elektrobit.com" },
 ]
 description = "EMBedded Disk GENerator core components"
 readme = "README.md"
