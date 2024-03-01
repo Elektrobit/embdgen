@@ -1,28 +1,35 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
-import abc
 from typing import List
 from pathlib import Path
+
+import abc
 import parted
 
 from embdgen.plugins.region.PartitionRegion import PartitionRegion
 
 from embdgen.core.utils.SizeType import SizeType
 from embdgen.core.utils.image import create_empty_image
-from ..utils.class_factory import Config
-from ..region import BaseRegion
+from embdgen.core.utils.class_factory import Config
+from embdgen.core.region import BaseRegion
 
 
-@Config('parts')
-@Config('boot_partition', optional=True)
+@Config("parts")
+@Config("boot_partition", optional=True)
 class BaseLabel(abc.ABC):
-    """Base class for labels (i.e. partition types, e.g. MBR or GPT)"""
+    """
+    Base class for labels (i.e. partition types, e.g. MBR or GPT)
+    """
 
     parts: List[BaseRegion]
-    """List of regions to be included in the image"""
+    """
+    List of regions to be included in the image
+    """
 
     boot_partition: str = None
-    """Name of the partitions marked as 'bootable'"""
+    """
+    Name of the partitions marked as 'bootable'
+    """
 
     def __init__(self):
         self.parts = []
@@ -30,8 +37,10 @@ class BaseLabel(abc.ABC):
     def prepare(self):
         for part in self.parts:
             part.prepare()
+
         self.parts.sort(key=lambda x: x.start)
         cur_offset = SizeType(0)
+
         for part in self.parts:
             if part.start.is_undefined:
                 part.start = cur_offset
@@ -61,13 +70,16 @@ class BaseLabel(abc.ABC):
                 disk=disk,
                 type=parted.PARTITION_NORMAL,
                 geometry=geometry,
-                fs=parted.FileSystem(part.fstype, geometry=geometry)
+                fs=parted.FileSystem(part.fstype, geometry=geometry),
             )
+
             if ptType == "msdos":
                 partition.setFlag(parted.PARTITION_LBA)
             disk.addPartition(partition=partition, constraint=parted.Constraint(exactGeom=geometry))
+
             if part.name == self.boot_partition:
                 partition.setFlag(parted.PARTITION_BOOT)
+
         disk.commit()
 
     def create(self, filename: Path):

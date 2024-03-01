@@ -2,29 +2,38 @@
 
 import abc
 import io
-from ..utils.SizeType import SizeType
 
+from ..utils.SizeType import SizeType
 from ..utils.class_factory import Config
 
-@Config('name')
-@Config('start', optional=True)
-@Config('size', optional=True)
+
+@Config("name")
+@Config("start", optional=True)
+@Config("size", optional=True)
 class BaseRegion(abc.ABC):
-    """Base class for regions
+    """
+    Base class for regions
 
     A region is not necessarily part of the partition table.
     It is just a part of the final image with a start and a size.
     """
 
-    name: str #: Name of the region
+    name: str
+    """
+    Name of the region
+    """
+
     start: SizeType
-    """Start of the region
+    """
+    Start of the region
 
     This can either be specified or should be calculated automatically
     by the label implementation.
     """
+
     size: SizeType
-    """Size of the region
+    """
+    Size of the region
 
     This can either be specified or should be calculated automatically
     by the label or the content
@@ -38,7 +47,8 @@ class BaseRegion(abc.ABC):
         return f"{self.start.hex_bytes} - {(self.start + self.size).hex_bytes} Part {self.name}"
 
     def prepare(self) -> None:
-        """Prepare for writing to the image file.
+        """
+        Prepare for writing to the image file.
 
         Depending on the implementation, this calculates missing attributes (e.g. size)
         or even prepares a temporary file.
@@ -46,4 +56,6 @@ class BaseRegion(abc.ABC):
 
     @abc.abstractmethod
     def write(self, out_file: io.BufferedIOBase):
-        """Writes this region to the current position in ``out_file``"""
+        """
+        Writes this region to the current position in ``out_file``
+        """
