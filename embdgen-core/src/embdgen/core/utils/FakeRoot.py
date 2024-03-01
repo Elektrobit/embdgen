@@ -23,6 +23,7 @@ class FakeRoot():
 
     A fakeroot can reuse the state file of another fakeroot without modifying it.
     """
+
     _savefile: Path
     _parent: Optional[FakeRoot]
 
