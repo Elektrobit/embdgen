@@ -59,7 +59,12 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: i
             out_file.write(data)
         else:
             # Deallocate blocks, to ensure they are 0
-            fallocate(out_file, out_file.tell(), len(data), FALLOC_FL_PUNCH_HOLE + FALLOC_FL_KEEP_SIZE)
+            fallocate(
+                out_file,
+                out_file.tell(),
+                len(data),
+                FALLOC_FL_PUNCH_HOLE + FALLOC_FL_KEEP_SIZE,
+            )
             out_file.seek(len(data), io.SEEK_CUR)
 
     # If there is a hole at the end of the file,
