@@ -81,7 +81,10 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: i
 
 def get_temp_path() -> Path:
     return Path(get_temp_path.TEMP_PATH)
+
+
 get_temp_path.TEMP_PATH = "tmp"
 
-def get_temp_file(ext: str="") -> Path:
+
+def get_temp_file(ext: str = "") -> Path:
     return Path(tempfile.mktemp(dir=get_temp_path(), suffix=ext))
