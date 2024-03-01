@@ -6,8 +6,9 @@ from pathlib import Path
 import subprocess
 
 class FakeRoot():
-    """Encapsulate usage of fakeroot command line tool
-    
+    """
+    Encapsulate usage of fakeroot command line tool
+
     This allows file operations, that are usually only possible with root rights
     (e.g setting owner/group and creating device nodes).
     The files are created on the filesystem just like normal files and the attributes,
