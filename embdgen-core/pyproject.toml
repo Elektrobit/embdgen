@@ -26,10 +26,7 @@ classifiers = [
     "Topic :: Software Development :: Embedded Systems",
 ]
 requires-python = ">=3.9"
-dependencies = [
-    "pyparted",
-    "fallocate"
-]
+dependencies = ["pyparted", "fallocate"]
 
 [project.urls]
 Homepage = "https://github.com/Elektrobit/embdgen"
@@ -49,20 +46,17 @@ disable = [
     'broad-exception-raised',
     'too-few-public-methods',
     'too-many-instance-attributes',
-    'fixme'
+    'fixme',
 ]
 
 [tool.pytest.ini_options]
 minversion = "6.2.5"
 addopts = "--cov --cov-context=test --cov-report html -rP"
-testpaths = [ "tests" ]
+testpaths = ["tests"]
 #tmp_path_retention_policy = "none"
 
 [tool.coverage.paths]
-source = [
-    "src/embdgen",
-    "*/site-packages/embdgen"
-]
+source = ["src/embdgen", "*/site-packages/embdgen"]
 
 [tool.coverage.run]
 branch = true
@@ -70,10 +64,7 @@ source = ["embdgen", "src"]
 
 [tool.coverage.report]
 include_namespace_packages = true
-exclude_also = [
-    "@(abc\\.)?abstractmethod",
-    "def __repr__"
-]
+exclude_also = ["@(abc\\.)?abstractmethod", "def __repr__"]
 include = ["src/*"]
 
 [tool.coverage.html]
