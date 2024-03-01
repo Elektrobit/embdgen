@@ -8,7 +8,7 @@ from embdgen.core.utils.class_factory import Config
 
 
 @Config("content")
-class BaseContentRegion(BaseRegion, abc.ABC):
+class BaseContentRegion(BaseRegion):
     content: BaseContent = None
 
     def prepare(self) -> None:
