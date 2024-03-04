@@ -26,7 +26,7 @@ class BaseLabel(abc.ABC):
     List of regions to be included in the image
     """
 
-    boot_partition: str = None
+    boot_partition: str | None = None
     """
     Name of the partitions marked as 'bootable'
     """
