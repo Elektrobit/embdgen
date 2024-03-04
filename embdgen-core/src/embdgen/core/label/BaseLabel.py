@@ -4,14 +4,14 @@ from typing import List
 from pathlib import Path
 
 import abc
-import parted
 
-from embdgen.plugins.region.PartitionRegion import PartitionRegion
+import parted  # type: ignore
 
-from embdgen.core.utils.SizeType import SizeType
-from embdgen.core.utils.image import create_empty_image
-from embdgen.core.utils.class_factory import Config
-from embdgen.core.region import BaseRegion
+from embdgen.plugins.region.PartitionRegion import PartitionRegion  # type: ignore
+from embdgen.core.utils.SizeType import SizeType  # type: ignore
+from embdgen.core.utils.image import create_empty_image  # type: ignore
+from embdgen.core.utils.class_factory import Config  # type: ignore
+from embdgen.core.region import BaseRegion  # type: ignore
 
 
 @Config("parts")
