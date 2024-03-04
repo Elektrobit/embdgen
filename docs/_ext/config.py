@@ -13,7 +13,8 @@ from embdgen.core.utils.class_factory import FactoryBase, Meta
 
 logger = logging.getLogger(__name__)
 
-class embdgen_config():
+
+class embdgen_config:
     pass
 
     @classmethod
