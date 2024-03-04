@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any, Optional, Union
 from pathlib import Path
 
 import subprocess
@@ -28,7 +28,7 @@ class FakeRoot:
     _savefile: Path
     _parent: Optional[FakeRoot]
 
-    def __init__(self, savefile: Path, parent: "FakeRoot" = None) -> None:
+    def __init__(self, savefile: Path, parent: FakeRoot | None = None) -> None:
         self._savefile = savefile
         self._parent = parent
         if parent and parent._parent:
@@ -42,7 +42,7 @@ class FakeRoot:
         check: bool = bool(kwargs.get("check", False))
         kwargs.pop("check", None)
 
-        safe_file: list[str] = []
+        safe_file: list[Union[str, Path]] = []
         if self._parent and self._parent.savefile.exists():
             safe_file = ["-i", self._parent.savefile]
         elif self._savefile.exists():
