@@ -6,10 +6,10 @@ from sphinx.application import Sphinx
 from sphinx.util.docutils import SphinxDirective
 from sphinx.ext.autodoc.importer import import_module
 from sphinx.util.nodes import nested_parse_with_titles
-from docutils import nodes
-from docutils.statemachine import StringList
+from docutils import nodes  # type: ignore
+from docutils.statemachine import StringList  # type: ignore
 
-from embdgen.core.utils.class_factory import FactoryBase, Meta
+from embdgen.core.utils.class_factory import FactoryBase, Meta  # type: ignore
 
 logger = logging.getLogger(__name__)
 
