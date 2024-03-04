@@ -31,11 +31,7 @@ class FdiskParser:
 
     def __init__(self, image):
         self.regions = []
-        ret = subprocess.run([
-            'fdisk',
-            '-l',
-            image
-        ], stdout=subprocess.PIPE, check=False, encoding="ascii")
+        ret = subprocess.run(["fdisk", "-l", image], stdout=subprocess.PIPE, check=False, encoding="ascii")
         if ret.returncode == 0:
             self.is_valid = True
         self._parse(ret.stdout)
@@ -59,19 +55,19 @@ class FdiskParser:
             if in_regions:
                 parts = re.split(r"\s+", line)
                 _, start, end, sectors, _, *_ = parts
-                self.regions.append(FdiskRegion(
-                    int(start),
-                    int(end),
-                    int(sectors),
-                ))
+                self.regions.append(
+                    FdiskRegion(
+                        int(start),
+                        int(end),
+                        int(sectors),
+                    )
+                )
 
             else:
                 if line.startswith("Disk identifier:"):
                     self.diskid = int((line.split(":")[1]).split("-")[0], 16)
                 elif line.startswith("Device"):
                     in_regions = True
-
-
 
 
 class TestGPT:
@@ -100,11 +96,7 @@ class TestGPT:
         fat32.content.content = FilesContent()
         fat32.size = SizeType.parse("5MB")
 
-        obj.parts = [
-            empty,
-            ext4,
-            fat32
-        ]
+        obj.parts = [empty, ext4, fat32]
         obj.boot_partition = ext4.name
 
         obj.prepare()
