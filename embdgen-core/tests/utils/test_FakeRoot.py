@@ -4,7 +4,8 @@ import os
 from pathlib import Path
 import pytest
 
-from embdgen.core.utils.FakeRoot import FakeRoot, subprocess
+from embdgen.core.utils.FakeRoot import FakeRoot, subprocess  # type: ignore
+
 
 def get_uid_and_gid(fr: FakeRoot, file: Path) -> str:
     res = fr.run([

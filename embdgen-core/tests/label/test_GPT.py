@@ -6,16 +6,17 @@ import subprocess
 from dataclasses import dataclass
 import pytest
 
-from embdgen.core.utils.image import get_temp_path
-from embdgen.core.utils.SizeType import SizeType
+from embdgen.core.utils.image import get_temp_path  # type: ignore
+from embdgen.core.utils.SizeType import SizeType  # type: ignore
 
-from embdgen.plugins.label.GPT import GPT
-from embdgen.plugins.region.EmptyRegion import EmptyRegion
-from embdgen.plugins.region.PartitionRegion import PartitionRegion
+from embdgen.plugins.label.GPT import GPT  # type: ignore
+from embdgen.plugins.region.EmptyRegion import EmptyRegion  # type: ignore
+from embdgen.plugins.region.PartitionRegion import PartitionRegion  # type: ignore
 
-from embdgen.plugins.content.RawContent import RawContent
-from embdgen.plugins.content.FilesContent import FilesContent
-from embdgen.plugins.content.Fat32Content import Fat32Content
+from embdgen.plugins.content.RawContent import RawContent  # type: ignore
+from embdgen.plugins.content.FilesContent import FilesContent  # type: ignore
+from embdgen.plugins.content.Fat32Content import Fat32Content  # type: ignore
+
 
 @dataclass
 class FdiskRegion:
