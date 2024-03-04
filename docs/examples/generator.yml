@@ -1,0 +1,41 @@
+contents:
+  - name: archive
+    type: split_archive
+    archive: files/archive.tar
+    splits:
+      - name: home
+        root: home
+      - name: data
+        root: data
+    remaining: root
+
+
+image:
+  type: mbr
+  parts:
+    - name: root
+      type: partition
+      fstype: ext4
+      content:
+        type: verity
+        metadata: root.verity
+        content:
+          size: 100MB
+          type: ext4
+          content: archive.root
+
+    - name: home
+      type: partition
+      fstype: ext4
+      size: 100MB
+      content:
+        type: ext4
+        content: archive.home
+
+    - name: data
+      type: partition
+      fstype: ext4
+      size: 100MB
+      content:
+        type: ext4
+        content: archive.data

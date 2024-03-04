@@ -51,7 +51,6 @@ class CLI:
         get_temp_path.TEMP_PATH = options.tempdir # type: ignore
         get_temp_path.TEMP_PATH.mkdir(parents=True, exist_ok=True) # type: ignore
 
-        # options.format will always contain a valid config parser name here
         label = self.factory.by_type(options.format)().load(options.filename) # type: ignore
 
         print("Preparing...")
