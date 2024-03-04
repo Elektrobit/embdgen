@@ -54,7 +54,10 @@ class BaseLabel(abc.ABC):
         last_part: BaseRegion | None = None
         for part in self.parts:
             if part.start < cur_offset:
-                raise Exception(f"Part '{part.name}' overlapps with '{last_part.name}'")
+                if last_part is not None:
+                    raise Exception(f"Part '{part.name}' overlaps with '{last_part.name}'")
+                else:
+                    raise Exception(f"Part '{part.name}' starts at {part.start}, but expected on {cur_offset}")
             last_part = part
             cur_offset += part.size
 
