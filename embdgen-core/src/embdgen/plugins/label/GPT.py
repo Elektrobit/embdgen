@@ -3,9 +3,10 @@
 import io
 from pathlib import Path
 
-from embdgen.core.region.BaseRegion import BaseRegion
-from embdgen.core.utils.SizeType import SizeType
-from embdgen.core.label.BaseLabel import BaseLabel
+from embdgen.core.region.BaseRegion import BaseRegion  # type: ignore
+from embdgen.core.utils.SizeType import SizeType  # type: ignore
+from embdgen.core.label.BaseLabel import BaseLabel  # type: ignore
+
 
 class PMBRHeader(BaseRegion):
 
@@ -40,9 +41,9 @@ class GPT(BaseLabel):
 
     GPT_DISK_ID_OFFSET = 0x238
 
-    pmbr_header: PMBRHeader = None
-    gpt_header: GPTHeader = None
-    sgpt_header: GPTHeader = None
+    pmbr_header: PMBRHeader | None = None
+    gpt_header: GPTHeader | None = None
+    sgpt_header: GPTHeader | None = None
 
     def __init__(self) -> None:
         super().__init__()
