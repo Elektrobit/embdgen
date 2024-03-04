@@ -110,7 +110,6 @@ class TestGPT:
         assert fdisk.regions[0].start_sector == 35
         assert fdisk.regions[1].start_sector == 37
 
-
     def test_overlap_primary(self):
         obj = GPT()
 
@@ -121,5 +120,5 @@ class TestGPT:
 
         obj.parts = [empty]
 
-        with pytest.raises(Exception, match="Part 'empty region' overlapps with 'GPT Header'"):
+        with pytest.raises(Exception, match="Part 'empty region' overlaps with 'GPT Header'"):
             obj.prepare()
