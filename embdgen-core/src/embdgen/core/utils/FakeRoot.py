@@ -39,7 +39,7 @@ class FakeRoot:
         return self._savefile
 
     def run(self, args, **kwargs) -> Any:
-        check: bool = bool(kwargs.get("check", False))
+        check: bool = bool(kwargs.get("check", True))
         kwargs.pop("check", None)
 
         safe_file: list[Union[str, Path]] = []
