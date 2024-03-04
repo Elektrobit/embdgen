@@ -20,12 +20,15 @@ class embdgen_config:
     @classmethod
     def visit(cls):
         pass
+
     @classmethod
     def depart(cls):
         pass
 
+
 class EmbdgenConfigDirective(SphinxDirective):
     has_content = True
+
     def run(self):
         factory: FactoryBase = getattr(import_module(self.content[0]), "Factory")()
         content = StringList()
@@ -53,14 +56,21 @@ class EmbdgenConfigDirective(SphinxDirective):
 
             content.append("Options", "")
             content.append("^" * len("Options"), "")
-            for key, meta in sorted(Meta.get(cls).items(), key = lambda x: (x[1].optional, x[0])):
+            for key, meta in sorted(
+                Meta.get(cls).items(), key=lambda x: (x[1].optional, x[0])
+            ):
                 org_type = typing.get_origin(meta.typecls)
-                if org_type: # Currently only list is supported, so assume -> list
+                if org_type:  # Currently only list is supported, so assume -> list
                     args = typing.get_args(meta.typecls)
                     typename = f"{meta.typecls.__name__}[{args[0].__name__}]"
                 else:
                     typename = meta.typecls.__name__
-                content.append(("" if meta.optional else "(required) ") + f"``{key}`` : {typename}", "")
+
+                content.append(
+                    ("" if meta.optional else "(required) ")
+                    + f"``{key}`` : {typename}",
+                    "",
+                )
                 if not meta.doc:
                     content.append("    N/A", "")
                 else:
@@ -76,14 +86,15 @@ class EmbdgenConfigDirective(SphinxDirective):
 
         return node.children
 
+
 def setup(app: Sphinx):
 
-#    app.add_node(embdgen_config)
-#    ,
-#                html=(embdgen_config.visit, embdgen_config.depart),
-#                 latex=(embdgen_config.visit, embdgen_config.depart),
-#                 text=(embdgen_config.visit, embdgen_config.depart))
-    app.add_directive('embdgen-config', EmbdgenConfigDirective)
+    #    app.add_node(embdgen_config)
+    #    ,
+    #                html=(embdgen_config.visit, embdgen_config.depart),
+    #                 latex=(embdgen_config.visit, embdgen_config.depart),
+    #                 text=(embdgen_config.visit, embdgen_config.depart))
+    app.add_directive("embdgen-config", EmbdgenConfigDirective)
 
     return {
         "version": "0.1",

@@ -27,14 +27,16 @@ class GPTHeader(BaseRegion):
         self.name = name
         self.is_partition = False
         self.start = SizeType(512)
-        self.size = SizeType(512*33)
+        self.size = SizeType(512 * 33)
 
     def write(self, out_file: io.BufferedIOBase):
         return
 
+
 class GPT(BaseLabel):
     """GUID Partition Table (GPT) partition type"""
-    LABEL_TYPE = 'gpt'
+
+    LABEL_TYPE = "gpt"
 
     GPT_DISK_ID_OFFSET = 0x238
 
