@@ -27,7 +27,7 @@ class embdgen_config:
 class EmbdgenConfigDirective(SphinxDirective):
     has_content = True
     def run(self):
-        factory: FactoryBase = getattr(import_module(self.content[0]), 'Factory')()
+        factory: FactoryBase = getattr(import_module(self.content[0]), "Factory")()
         content = StringList()
         for entry_type, cls in factory.class_map().items():
             module = sys.modules[cls.__module__]
@@ -70,7 +70,7 @@ class EmbdgenConfigDirective(SphinxDirective):
         node = nodes.section()
         node.document = self.state.document
 
-        logger.debug('[config] output:\n%s', '\n'.join(content))
+        logger.debug("[config] output:\n%s", "\n".join(content))
 
         nested_parse_with_titles(self.state, content, node)
 
@@ -86,7 +86,7 @@ def setup(app: Sphinx):
     app.add_directive('embdgen-config', EmbdgenConfigDirective)
 
     return {
-        'version': '0.1',
-        'parallel_read_safe': True,
-        'parallel_write_safe': True,
+        "version": "0.1",
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
     }
