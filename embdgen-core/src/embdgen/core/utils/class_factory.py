@@ -57,20 +57,20 @@ def Config(name: str, doc: str = "", optional=False) -> Callable[..., type[CT]]:
     """
 
     def decorate(cls: Type[CT]) -> Type[CT]:
-        local_doc = doc
+        local_doc: str = doc
         name_prop: Any | None = getattr(cls, name, None)
         if name_prop is not None and isinstance(name_prop, property):
             if name_prop.fset is None:
                 raise Exception(f"Property {name} in class {cls.__name__} has no setter defined")
             setter_type: Any = list(signature(name_prop.fset).parameters.values())[1].annotation
-            getter_type: Any = signature(obj=name_prop.fget).return_annotation
+            getter_type: Any = signature(name_prop.fget).return_annotation
             if getter_type != setter_type:
                 raise Exception(f"Property {name} in class {cls.__name__} has different types for getter and setter")
             if not local_doc:
-                local_doc: str = name_prop.fget.__doc__ or ""
+                local_doc = name_prop.fget.__doc__ or ""
             hints = {name: getter_type}
         else:
-            hints: dict[str, Any] = get_type_hints(cls)
+            hints = get_type_hints(cls)
 
         if name not in hints:
             raise Exception(f"No type for member {name} in class {cls.__name__} found")
@@ -86,7 +86,7 @@ T = TypeVar("T")
 
 
 class FactoryBase(abc.ABC, Generic[T]):
-    __class_map: Dict[Any, Type[T]] | None = None
+    __class_map: Dict[Any, Type[T]] = {}
     ALLOW_SUBCLASS = False
 
     @classmethod
@@ -109,8 +109,9 @@ class FactoryBase(abc.ABC, Generic[T]):
 
     @classmethod
     def class_map(cls) -> Dict[Any, Type[T]]:
-        if cls.__class_map is None:
-            cls.__class_map = cls.load()
+        cm = cls.load()
+        if not cls.__class_map and cm is not None:
+            cls.__class_map = cm
         return cls.__class_map
 
     @classmethod
@@ -127,14 +128,14 @@ class FactoryBase(abc.ABC, Generic[T]):
         return None
 
     @classmethod
-    def types(cls, parent_class: Type = None) -> List[Any]:
-        if not parent_class:
+    def types(cls, parent_class: Type | None = None) -> List[Any]:
+        if parent_class is None:
             return list(cls.class_map().keys())
 
         out: list[Any] = []
         for cur_type_class, impl_class in cls.class_map().items():
             if get_origin(cur_type_class) == list:
                 continue
-            if issubclass(impl_class, parent_class):
+            if parent_class is not None and issubclass(impl_class, parent_class):
                 out.append(cur_type_class)
         return out
