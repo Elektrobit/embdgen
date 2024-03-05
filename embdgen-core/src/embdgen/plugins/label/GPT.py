@@ -38,9 +38,9 @@ class GPT(BaseLabel):
 
     GPT_DISK_ID_OFFSET = 0x238
 
-    pmbr_header: PMBRHeader = None
-    gpt_header: GPTHeader = None
-    sgpt_header: GPTHeader = None
+    pmbr_header: PMBRHeader
+    gpt_header: GPTHeader
+    sgpt_header: GPTHeader
 
     def __init__(self) -> None:
         super().__init__()

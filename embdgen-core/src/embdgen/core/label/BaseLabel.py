@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import abc
-from typing import List
+from typing import List, Optional
 from pathlib import Path
-import parted
+import parted # type: ignore
 
 from embdgen.plugins.region.PartitionRegion import PartitionRegion
 
@@ -21,13 +21,13 @@ class BaseLabel(abc.ABC):
     parts: List[BaseRegion]
     """List of regions to be included in the image"""
 
-    boot_partition: str = None
+    boot_partition: Optional[str] = None
     """Name of the partitions marked as 'bootable'"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.parts = []
 
-    def prepare(self):
+    def prepare(self) -> None:
         for part in self.parts:
             part.prepare()
         self.parts.sort(key=lambda x: x.start)
@@ -39,17 +39,17 @@ class BaseLabel(abc.ABC):
 
         self._validate_parts()
 
-    def _validate_parts(self):
+    def _validate_parts(self) -> None:
         self.parts.sort(key=lambda x: x.start)
         cur_offset = SizeType(0)
         last_part = None
         for part in self.parts:
             if part.start < cur_offset:
-                raise Exception(f"Part '{part.name}' overlapps with '{last_part.name}'")
+                raise Exception(f"Part '{part.name}' overlapps with '{last_part.name}'") # type: ignore[attr-defined]
             last_part = part
             cur_offset += part.size
 
-    def _create_partition_table(self, filename: Path, ptType: str):
+    def _create_partition_table(self, filename: Path, ptType: str) -> None:
         device = parted.getDevice(filename.as_posix())
         disk = parted.freshDisk(device, ptType)
 
@@ -70,7 +70,7 @@ class BaseLabel(abc.ABC):
                 partition.setFlag(parted.PARTITION_BOOT)
         disk.commit()
 
-    def create(self, filename: Path):
+    def create(self, filename: Path) -> None:
         size = self.parts[-1].start + self.parts[-1].size
         create_empty_image(filename, size.bytes)
 
@@ -81,5 +81,5 @@ class BaseLabel(abc.ABC):
                 part.write(f)
 
     @abc.abstractmethod
-    def create_partition_table(self, filename: Path):
+    def create_partition_table(self, filename: Path) -> None:
         pass

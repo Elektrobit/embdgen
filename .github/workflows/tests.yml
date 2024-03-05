@@ -47,3 +47,6 @@ jobs:
 
       - name: Run lint
         run: scripts/run_lint.sh
+
+      - name: Run mypy
+        run: scripts/run_mypy.sh

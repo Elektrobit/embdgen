@@ -1,9 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
+from typing import Dict, Type
+
 from embdgen.plugins import label
 
 from ..utils.class_factory import FactoryBase
-from . import BaseLabel
+from .BaseLabel import BaseLabel
 
 class Factory(FactoryBase[BaseLabel]):
     """
@@ -11,5 +13,5 @@ class Factory(FactoryBase[BaseLabel]):
     """
 
     @classmethod
-    def load(cls):
+    def load(cls) -> Dict[str, Type[BaseLabel]]:
         return cls.load_plugins(label, BaseLabel, 'LABEL_TYPE')

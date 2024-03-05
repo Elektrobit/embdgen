@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import sys
-from typing import Optional, Sequence
+from typing import Optional, Sequence, NoReturn
 from pathlib import Path
 from dataclasses import dataclass
 from argparse import ArgumentParser
@@ -19,7 +19,7 @@ class Arguments:
 class CLI:
     factory = Factory()
 
-    def register_config_loaders(self, parser: ArgumentParser):
+    def register_config_loaders(self, parser: ArgumentParser) -> None:
         loaders = []
         for name, _ in self.factory.class_map().items():
             loaders.append(name)
@@ -38,7 +38,7 @@ class CLI:
         parser.add_argument("filename", type=Path, help="Config file name")
         return parser
 
-    def run(self, args: Sequence[str] = None):
+    def run(self, args: Optional[Sequence[str]] = None) -> None:
         options = self.build_parser().parse_args(args, namespace=Arguments())
         if not options.filename.exists():
             self.fatal(f"The config file {options.filename} does not exist")
@@ -48,10 +48,11 @@ class CLI:
             if options.format is None:
                 self.fatal("Unable to detect the format of the config file")
 
-        get_temp_path.TEMP_PATH = options.tempdir
-        get_temp_path.TEMP_PATH.mkdir(parents=True, exist_ok=True)
+        get_temp_path.TEMP_PATH = options.tempdir # type: ignore
+        get_temp_path.TEMP_PATH.mkdir(parents=True, exist_ok=True) # type: ignore
 
-        label = self.factory.by_type(options.format)().load(options.filename)
+        # options.format will always contain a valid config parser name here
+        label = self.factory.by_type(options.format)().load(options.filename) # type: ignore
 
         print("Preparing...")
         label.prepare()
@@ -62,12 +63,12 @@ class CLI:
         print(f"\nWriting image to {options.output}")
         label.create(options.output)
 
-    def probe_format(self, filename: Path):
+    def probe_format(self, filename: Path) -> Optional[str]:
         for name, typ in self.factory.class_map().items():
             if typ.probe(filename):
                 return name
         return None
 
 
-    def fatal(self, msg: str):
+    def fatal(self, msg: str) -> NoReturn:
         sys.exit(f"FATAL: {msg}")

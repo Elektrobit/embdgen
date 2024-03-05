@@ -2,6 +2,7 @@
 
 from io import BufferedIOBase
 from pathlib import Path
+from typing import Optional
 
 from embdgen.core.utils.class_factory import Config
 from embdgen.core.content.BinaryContent import BinaryContent
@@ -20,7 +21,7 @@ class RawContent(BinaryContent):
     _file: Path
     _offset: SizeType
 
-    __file_size: int = None
+    __file_size: Optional[int] = None
 
     def __init__(self) -> None:
         super().__init__()
@@ -58,7 +59,7 @@ class RawContent(BinaryContent):
 
     def prepare(self) -> None:
         file_size_available = self.__file_size
-        file_size_available -= self.offset.bytes
+        file_size_available -= self.offset.bytes # type: ignore[operator]
         if self.size.is_undefined:
             self.size = SizeType(file_size_available)
 

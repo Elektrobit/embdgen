@@ -6,17 +6,18 @@ Utility functions for working with images
 import io
 import os
 from pathlib import Path
+from typing import Optional
 import tempfile
-from fallocate import fallocate, FALLOC_FL_PUNCH_HOLE, FALLOC_FL_KEEP_SIZE
+from fallocate import fallocate, FALLOC_FL_PUNCH_HOLE, FALLOC_FL_KEEP_SIZE # type: ignore
 
-def create_empty_image(filename: str, size: int):
+def create_empty_image(filename: Path, size: int) -> None:
     """
     Create an empty sparse (if possible) file
     """
     with open(filename, "wb") as out_file:
         out_file.truncate(size)
 
-def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: int=None):
+def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: Optional[int]=None) -> None:
     """
     Copy sparse from in_file to out_file up to size bytes.
     This does not necessarily create the minimum sparse file.
@@ -72,8 +73,8 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: i
 
 
 def get_temp_path() -> Path:
-    return Path(get_temp_path.TEMP_PATH)
-get_temp_path.TEMP_PATH = "tmp"
+    return Path(get_temp_path.TEMP_PATH) # type: ignore[attr-defined]
+get_temp_path.TEMP_PATH = "tmp" # type: ignore[attr-defined]
 
 def get_temp_file(ext: str="") -> Path:
     return Path(tempfile.mktemp(dir=get_temp_path(), suffix=ext))

@@ -18,7 +18,7 @@ class ResizeExt4Content(BinaryContent):
     """
     CONTENT_TYPE = "resize_ext4"
 
-    content: BinaryContent = None
+    content: BinaryContent
     """Content to resize"""
 
     _add_space: SizeType = SizeType(0)

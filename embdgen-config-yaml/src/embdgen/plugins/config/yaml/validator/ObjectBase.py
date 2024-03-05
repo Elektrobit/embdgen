@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import abc
-from typing import Type
+from typing import Type, Callable, Optional, Union, get_origin, get_args
 import strictyaml as y
 
 from embdgen.core.utils.class_factory import Meta
@@ -9,16 +9,15 @@ from .Factory import Factory, FactoryBase
 
 class ObjectBase(y.Validator, abc.ABC):
     __base_schema: y.Validator
-    __type_factory: callable
+    __type_factory: Callable
 
-    expected_class: Type = None
-    FACTORY: FactoryBase = None
+    FACTORY: Type[FactoryBase]
 
     @classmethod
     def create(cls, expected_class: Type):
         return cls(expected_class)
 
-    def __init__(self, expected_class: Type = None) -> None:
+    def __init__(self, expected_class: Optional[Type] = None) -> None:
         self.__type_factory = self.FACTORY.by_type
         self.__base_schema = y.MapCombined({
             'type': y.Enum(self.FACTORY.types(expected_class))
@@ -42,10 +41,14 @@ class ObjectBase(y.Validator, abc.ABC):
             str: y.Str,
             bool: y.Bool
         }
+        if get_origin(typecls) == Union:
+            args = get_args(typecls)
+            if len(args) == 2 and type(None) in args: # This is Optional[T]
+                typecls = next(filter(lambda x: x is not type(None), args))
         validator = Factory.by_type(typecls)
         if validator:
             if issubclass(validator, ObjectBase):
-                return lambda: validator.create(typecls)
+                return lambda: validator.create(typecls) # type: ignore
             return validator
         if typecls in TYPE_CLASS_MAP:
             return TYPE_CLASS_MAP[typecls]

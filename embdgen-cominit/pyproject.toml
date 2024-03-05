@@ -77,3 +77,7 @@ include = ["src/*"]
 
 [tool.coverage.html]
 show_contexts = true
+
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+explicit_package_bases = true
