@@ -48,3 +48,11 @@ disable = [
     'too-few-public-methods',
     'too-many-instance-attributes'
 ]
+
+[tool.mypy]
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = "strictyaml.*"
+ignore_missing_imports = true

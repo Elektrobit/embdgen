@@ -2,6 +2,7 @@
 
 import io
 import struct
+from typing import Optional
 from pathlib import Path
 
 from embdgen.core.utils.class_factory import Config
@@ -10,7 +11,7 @@ from embdgen.core.utils.SizeType import SizeType
 from embdgen.core.label.BaseLabel import BaseLabel
 
 class MBRHeader(BaseRegion):
-    diskid: int = None
+    diskid: Optional[int] = None
 
     def __init__(self) -> None:
         super().__init__()
@@ -31,7 +32,7 @@ class MBR(BaseLabel):
 
     DISK_ID_OFFSET = 0x1B8
 
-    mbr_header: MBRHeader = None
+    mbr_header: MBRHeader
 
     def __init__(self) -> None:
         super().__init__()
@@ -39,12 +40,12 @@ class MBR(BaseLabel):
         self.parts.append(self.mbr_header)
 
     @property
-    def diskid(self) -> int:
+    def diskid(self) -> Optional[int]:
         """Diskid value (part of the partition table metadata)"""
         return self.mbr_header.diskid
 
     @diskid.setter
-    def diskid(self, value: int):
+    def diskid(self, value: Optional[int]):
         self.mbr_header.diskid = value
 
     def prepare(self):

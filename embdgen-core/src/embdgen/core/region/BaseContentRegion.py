@@ -1,14 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
-import abc
 from . import BaseRegion
 from ..content import BaseContent
 
 from ..utils.class_factory import Config
 
 @Config('content')
-class BaseContentRegion(BaseRegion, abc.ABC):
-    content: BaseContent = None
+class BaseContentRegion(BaseRegion):
+    content: BaseContent
 
     def prepare(self) -> None:
         if not self.size.is_undefined:

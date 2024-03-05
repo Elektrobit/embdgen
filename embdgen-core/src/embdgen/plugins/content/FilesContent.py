@@ -15,12 +15,13 @@ class FilesContent(FilesContentProvider):
     CONTENT_TYPE = "files"
 
     _files: List[Path]
-    _configured_files: List[Path] = None
+    _configured_files: List[Path]
 
 
     def __init__(self):
         super().__init__()
         self.files = []
+        self._configured_files = []
 
     @property
     def files(self) -> List[Path]:

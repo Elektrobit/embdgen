@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
-from typing import Optional
+from typing import Optional, List, Union
 
 from pathlib import Path
 import subprocess
@@ -23,7 +23,7 @@ class FakeRoot():
     _savefile: Path
     _parent: Optional["FakeRoot"]
 
-    def __init__(self, savefile: Path, parent: "FakeRoot" = None):
+    def __init__(self, savefile: Path, parent: Optional["FakeRoot"] = None):
         self._savefile = savefile
         self._parent = parent
         if parent and parent._parent:
@@ -33,13 +33,13 @@ class FakeRoot():
     def savefile(self) -> Path:
         return self._savefile
 
-    def run(self, args, **kwargs):
+    def run(self, args: List[Union[str, Path]], **kwargs):
         check = True
         if "check" in kwargs:
             check = kwargs["check"]
             del kwargs["check"]
 
-        safe_file = []
+        safe_file: List[Union[str, Path]] = []
         if self._parent and self._parent.savefile.exists():
             safe_file = ["-i", self._parent.savefile]
         elif self._savefile.exists():

@@ -19,7 +19,7 @@ class Ext4Content(BinaryContent):
     """
     CONTENT_TYPE = "ext4"
 
-    content: FilesContentProvider = None
+    content: FilesContentProvider
     """Files, that are added to the filesystem"""
 
     def prepare(self) -> None:

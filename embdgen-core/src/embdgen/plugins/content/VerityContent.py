@@ -6,6 +6,7 @@ from io import BufferedIOBase
 import math
 import random
 from pathlib import Path
+from typing import Optional
 
 import hashlib
 
@@ -33,15 +34,15 @@ class VerityContent(BinaryContent):
     """
     CONTENT_TYPE = "verity"
 
-    content: BinaryContent = None
+    content: BinaryContent
     """The payload content of the partition"""
-    metadata: Path = None
+    metadata: Path
     """A path to a file, where the metadata is written to.
     
     This is in the same format as the output of veritysetup.
     """
 
-    salt: str = None
+    salt: Optional[str] = None
     """Salt to use for verity hashes. This can be useful, to generate reproducible images"""
     algorithm: str = "sha256"
     """Hash algorithm to use (defaults to sha256)"""
@@ -56,7 +57,7 @@ class VerityContent(BinaryContent):
     """
 
     __padding: int = 0
-    __hash_file: Path = None
+    __hash_file: Optional[Path] = None
 
     @property
     def hash_file(self):

@@ -60,7 +60,7 @@ class SizeType():
         self._bytes = bytes_val
 
     @classmethod
-    def parse(cls, text: str):
+    def parse(cls, text: str) -> 'SizeType':
         """Parses a size from the a string representation
 
         Examples:
@@ -98,27 +98,29 @@ class SizeType():
         return cls(int_value)
 
     @property
-    def is_sector_aligned(self):
+    def is_sector_aligned(self) -> bool:
         """Return true, if this is aligned to a sector number"""
-        return self._bytes % BYTES_PER_SECTOR == 0
+        return self._bytes is not None and self._bytes % BYTES_PER_SECTOR == 0
 
     @property
-    def sectors(self):
+    def sectors(self) -> int:
         """The sector number of this
         
         :raises: Exception if not sector aligned
         """
         if not self.is_sector_aligned:
             raise Exception(f"Cannot convert {self._bytes} B to sectors")
-        return self._bytes // BYTES_PER_SECTOR
+        return self._bytes // BYTES_PER_SECTOR # type: ignore[operator]
 
     @property
-    def bytes(self):
+    def bytes(self) -> int:
         """The number of bytes"""
+        if self._bytes is None:
+            raise Exception("SizeType.bytes called, when value is undefined")
         return self._bytes
 
     @bytes.setter
-    def bytes(self, bytes_val: int):
+    def bytes(self, bytes_val: int) -> None:
         self._bytes = bytes_val
 
     @property
@@ -132,8 +134,8 @@ class SizeType():
         """
         return "?" if self.is_undefined else f"0x{self._bytes:08x}"
 
-    def __repr__(self):
-        return f"{self.bytes} B"
+    def __repr__(self) -> str:
+        return f"{None if self._bytes is None else self._bytes} B"
 
     @property
     def is_undefined(self) -> bool:
@@ -146,25 +148,25 @@ class SizeType():
         """
         return self._bytes is None
 
-    def __eq__(self, other: 'SizeType') -> bool:
-        return self._bytes == other._bytes
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, SizeType) and self._bytes == other._bytes
 
-    def __ne__(self, other: 'SizeType') -> bool:
-        return self._bytes != other._bytes
+    def __ne__(self, other: object) -> bool:
+        return not isinstance(other, SizeType) or self._bytes != other._bytes
 
     def __lt__(self, other: 'SizeType') -> bool:
         if self.is_undefined:
             return False
         if other.is_undefined:
             return True
-        return self.bytes < other.bytes
+        return self.bytes < other.bytes # type: ignore[operator]
 
     def __gt__(self, other: 'SizeType') -> bool:
         if other.is_undefined:
             return False
         if self.is_undefined:
             return not other.is_undefined
-        return self.bytes > other.bytes
+        return self.bytes > other.bytes # type: ignore[operator]
 
     def __le__(self, other: 'SizeType') -> bool:
         return self == other or self < other
@@ -178,13 +180,13 @@ class SizeType():
             return SizeType(other._bytes)
         if other.is_undefined:
             return SizeType(self._bytes)
-        return SizeType(self._bytes + other._bytes)
+        return SizeType(self._bytes + other._bytes) # type: ignore[operator]
 
     def __sub__(self, other: 'SizeType') -> 'SizeType':
         if self.is_undefined:
             if other.is_undefined:
                 return SizeType(None)
-            return SizeType(-other._bytes)
+            return SizeType(-other._bytes) # type: ignore[operator]
         if other.is_undefined:
             return SizeType(self._bytes)
-        return SizeType(self._bytes - other._bytes)
+        return SizeType(self._bytes - other._bytes) # type: ignore[operator]

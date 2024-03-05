@@ -89,6 +89,19 @@ If you run pylint from the root of the repository, the correct configuration is 
 
 The result is printed on the command line
 
+### Running mypy
+To run mypy for all packages, just run `scripts/run_mypy.sh`
+
+To run mypy for a single package, switch to the directory and run `mypy src`:
+
+```
+cd embdgen-core
+mypy src
+```
+
+If you run mypy from the root of the repository, the correct configuration is not used and it will generate a lot of warnings
+
+The result is printed on the command line
 
 ### Running tests
 To run all tests, just run `scripts/run_tests.sh`.

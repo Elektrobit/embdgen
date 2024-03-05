@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import abc
-import strictyaml as y
+import strictyaml as y # type: ignore
 
 class ListBase(y.Seq, abc.ABC):
     def __call__(self, chunk):
