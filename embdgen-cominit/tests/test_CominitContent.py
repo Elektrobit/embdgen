@@ -2,7 +2,7 @@
 
 from pathlib import Path
 import pytest
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives.asymmetric import rsa, ec, padding
 from cryptography.hazmat.primitives import serialization, hashes
 
 from embdgen.core.utils.image import get_temp_path
@@ -18,8 +18,10 @@ from embdgen.plugins.content.VerityContent import VerityContent
 private_key = rsa.generate_private_key(public_exponent=65537, key_size=4096)
 public_key = private_key.public_key()
 
+invalid_private_key = ec.generate_private_key(ec.SECP256K1, 4096)
+
 def verify_signature(metadata: bytes, sig: bytes):
-    public_key.verify(sig[:512], metadata + b"\0",  
+    public_key.verify(sig[:512], metadata + b"\0",
         padding.PSS(
             mgf=padding.MGF1(hashes.SHA256()),
             salt_length=hashes.SHA256.digest_size
@@ -135,7 +137,7 @@ class TestCominitContent:
         obj.metadata = meta_file
         with pytest.raises(KeyError):
             obj.prepare()
-        
+
 
     def test_verity_writable(self):
         obj = CominitContent()
@@ -192,3 +194,29 @@ class TestCominitContent:
         assert base.decode() == "1 ext4 ro verity"
         assert verity == b"1 512 4096 2 1 sha256 b3f20b170c2e942733e9bab7e237b1da46ae0b0698e2087b71cf4b6c7e8ef223 deadbeef"
         assert crypt == b""
+
+    def test_invalid_private_key(self, tmp_path: Path):
+        image_file = tmp_path / "image"
+        content_file = tmp_path / "content"
+        content_file.write_bytes(b"\1" * 512 * 2)
+        key_path = tmp_path / "key.pem"
+        key_path.write_bytes(invalid_private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        ))
+
+        obj = CominitContent()
+        obj.dm_type = "plain"
+        obj.filesystem = "ext4"
+        obj.readonly = True
+        obj.key = key_path
+
+        obj.content = RawContent()
+        obj.content.file = content_file
+
+        obj.prepare()
+
+        with image_file.open("wb") as out_file:
+            with pytest.raises(Exception, match="Only RSA private keys are supported for cominit"):
+                obj.write(out_file)

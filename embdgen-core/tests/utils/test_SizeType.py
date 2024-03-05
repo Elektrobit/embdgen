@@ -233,3 +233,7 @@ class TestSizeType:
     )
     def test_sub(self, left_bytes: Optional[int], right_bytes: Optional[int], expected_bytes: int):
         assert SizeType(left_bytes) - SizeType(right_bytes) == SizeType(expected_bytes)
+
+    def test_bytes(self):
+        with pytest.raises(Exception, match="SizeType.bytes called, when value is undefined"):
+            SizeType().bytes

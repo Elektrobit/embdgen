@@ -126,7 +126,7 @@ class TestGPT:
         empty.start = SizeType(512 * 33)
         empty.size = SizeType(512)
 
-        obj.parts = [empty]
+        obj.parts.append(empty)
 
         with pytest.raises(Exception, match="Part 'empty region' overlapps with 'GPT Header'"):
             obj.prepare()

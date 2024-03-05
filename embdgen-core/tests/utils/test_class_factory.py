@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
+import re
+from typing import List, Optional, Union
 import pytest
-from typing import List
 
 from embdgen.core.utils.class_factory import FactoryBase, Config, Meta
 from .plugintest import simple
@@ -96,6 +97,7 @@ class TestConfig:
                 @property
                 def foo(self) -> int: pass
 
+
 class FactoryTestClass(FactoryBase):
     @classmethod
     def load(cls):
@@ -128,4 +130,7 @@ class TestFactoryWithClassKey():
     def test_by_type(self):
         assert self.factory.by_type(CustomSubClass1) == TestPlugin4
         assert self.factory.by_type(self.__class__) is None
+        assert self.factory.by_type(Optional[CustomSubClass2]) == TestPlugin5
         assert self.factory.by_type(CustomSubClass3) == TestPlugin3, "Nonexisting type, but it's parent class is registered"
+        with pytest.raises(Exception, match=re.escape("Unexpected type in <class 'tests.utils.test_class_factory.FactoryTestClassWithClassKey'>.by_type: typing.Union[str, int]")):
+            self.factory.by_type(Union[str, int])
