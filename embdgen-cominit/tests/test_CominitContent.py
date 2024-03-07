@@ -18,7 +18,7 @@ from embdgen.plugins.content.VerityContent import VerityContent
 private_key = rsa.generate_private_key(public_exponent=65537, key_size=4096)
 public_key = private_key.public_key()
 
-invalid_private_key = ec.generate_private_key(ec.SECP256K1(), 4096)
+invalid_private_key = ec.generate_private_key(ec.SECP256K1())
 
 def verify_signature(metadata: bytes, sig: bytes):
     public_key.verify(sig[:512], metadata + b"\0",
