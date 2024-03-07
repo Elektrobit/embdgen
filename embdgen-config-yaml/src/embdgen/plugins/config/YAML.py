@@ -7,6 +7,8 @@ from embdgen.core.config.BaseConfig import BaseConfig
 from embdgen.core.label.BaseLabel import BaseLabel
 
 from embdgen.plugins.config.yaml.validator.Label import Label as LabelValidator
+from embdgen.plugins.config.yaml.validator.ContentGenerator import ContentGenerator as ContentGeneratorValidator
+from embdgen.plugins.config.yaml.ContentRegistry import ContentRegistry
 
 __version__ = "0.0.1"
 
@@ -23,6 +25,21 @@ class YAML(BaseConfig):
             return False
 
     def load(self, filename: Path) -> BaseLabel:
+        root_schema = y.OrValidator(
+            LabelValidator(),
+            y.Map({
+                y.Optional('contents'): y.Seq(ContentGeneratorValidator()),
+                'image': LabelValidator()
+            })
+        )
+
+        ContentRegistry.instance().clear()
         with filename.open(encoding="utf-8") as f:
-            conf = y.load(f.read(), LabelValidator())
-        return conf.value
+            conf = y.load(f.read(), root_schema)
+
+        if conf.is_mapping() and "image" in conf:
+            image = conf["image"].value
+        else:
+            image = conf.value
+
+        return image

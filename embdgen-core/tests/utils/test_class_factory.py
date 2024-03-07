@@ -97,6 +97,14 @@ class TestConfig:
                 @property
                 def foo(self) -> int: pass
 
+    def test_has_meta(self):
+        class Foo: pass
+        @Config('foo')
+        class Bar:
+            foo: str
+
+        assert Meta.has_meta(Foo) is False
+        assert Meta.has_meta(Bar) is True
 
 class FactoryTestClass(FactoryBase):
     @classmethod
@@ -134,3 +142,4 @@ class TestFactoryWithClassKey():
         assert self.factory.by_type(CustomSubClass3) == TestPlugin3, "Nonexisting type, but it's parent class is registered"
         with pytest.raises(Exception, match=re.escape("Unexpected type in <class 'tests.utils.test_class_factory.FactoryTestClassWithClassKey'>.by_type: typing.Union[str, int]")):
             self.factory.by_type(Union[str, int])
+        assert self.factory.by_type("") is None

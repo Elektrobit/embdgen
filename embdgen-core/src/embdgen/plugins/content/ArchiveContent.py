@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from tempfile import TemporaryDirectory
 
 from embdgen.core.utils.class_factory import Config
@@ -18,7 +18,7 @@ class ArchiveContent(FilesContentProvider):
     """Archive to be unpacked"""
 
     _files: List[Path]
-    _tmpDir: TemporaryDirectory
+    _tmpDir: Optional[TemporaryDirectory] = None
 
     @property
     def files(self) -> List[Path]:

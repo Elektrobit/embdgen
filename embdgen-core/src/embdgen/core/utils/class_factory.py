@@ -21,6 +21,10 @@ class Meta():
     optional: bool = False
 
     @classmethod
+    def has_meta(cls, obj: Type) -> bool:
+        return hasattr(obj, cls._META_KEY)
+
+    @classmethod
     def get(cls, obj: object) -> Dict[str, 'Meta']:
         return getattr(obj, cls._META_KEY, {})
 
@@ -113,14 +117,16 @@ class FactoryBase(abc.ABC, Generic[T]):
             else:
                 raise Exception(f"Unexpected type in {cls}.by_type: {type_any}")
         impl_class = cls.class_map().get(type_any, None)
+
         if impl_class or not cls.ALLOW_SUBCLASS:
             return impl_class
 
-        for cur_type_class, impl_class in cls.class_map().items():
-            if get_origin(cur_type_class) == list:
-                continue
-            if issubclass(type_any, cur_type_class):
-                return impl_class
+        if isclass(type_any):
+            for cur_type_class, impl_class in cls.class_map().items():
+                if get_origin(cur_type_class) is list:
+                    continue
+                if issubclass(type_any, cur_type_class):
+                    return impl_class
         return None
 
 

@@ -1,6 +1,6 @@
 # Simple example
-# This creates an MBR partition layout with a single partition,
-# that is recorded in the partition table (boot)
+# This creates an MBR partition layout with two partitions,
+# that are recorded in the partition table (boot and root)
 #
 # It also writes the NXP S32 series bootloader (fip.s32) to the correct locations
 # around the partition table and reserves space for the u-boot environment

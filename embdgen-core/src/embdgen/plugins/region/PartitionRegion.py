@@ -9,8 +9,7 @@ from embdgen.core.content import BinaryContent
 @Config('content')
 @Config('fstype')
 class PartitionRegion(BaseContentRegion):
-    """
-    Partition region
+    """Partition region
 
     This creates an entry in the partition table
     """
