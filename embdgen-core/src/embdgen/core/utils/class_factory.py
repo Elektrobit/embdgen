@@ -41,11 +41,11 @@ class Meta():
 def try_read_doc(cls: Type, name: str) -> str:
     try:
         from sphinx.pycode import ModuleAnalyzer # pylint: disable=import-outside-toplevel
-    except ModuleNotFoundError: # pragma: no cover
+        analyzer = ModuleAnalyzer.for_module(cls.__module__)
+        analyzer.analyze()
+        return "\n".join(analyzer.find_attr_docs().get((cls.__name__, name), [])).strip()
+    except: # pragma: no cover pylint: disable=bare-except
         return ""
-    analyzer = ModuleAnalyzer.for_module(cls.__module__)
-    analyzer.analyze()
-    return "\n".join(analyzer.find_attr_docs().get((cls.__name__, name), [])).strip()
 
 CT = TypeVar("CT")
 
