@@ -8,7 +8,6 @@ for d in embdgen-*; do
         echo "Testing $d"
         (
             cd $d
-            umask 002 # Ensure a consistent umask
             pytest tests
         )
     fi
