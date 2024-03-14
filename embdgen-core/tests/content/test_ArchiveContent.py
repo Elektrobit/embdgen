@@ -5,8 +5,8 @@ import os
 from pathlib import Path
 import subprocess
 
-from embdgen.plugins.content.ArchiveContent import ArchiveContent
-from embdgen.core.utils.image import get_temp_path
+from embdgen.plugins.content.ArchiveContent import ArchiveContent  # type: ignore
+from embdgen.core.utils.image import BuildLocation
 from embdgen.core.utils.FakeRoot import FakeRoot
 
 @lru_cache
@@ -20,8 +20,8 @@ def calc_umask(mode: int) -> str:
     return f"{mode:o}"
 
 def test_simple(tmp_path: Path):
-    get_temp_path.TEMP_PATH = tmp_path
-    
+    BuildLocation()(tmp_path)
+
     prepare_dir = tmp_path / "prepare"
     archive = tmp_path / "archive.tar"
 
@@ -38,7 +38,6 @@ def test_simple(tmp_path: Path):
         "."
     ], check=True, cwd=prepare_dir)
 
-
     obj = ArchiveContent()
     obj.archive = archive
     obj.prepare()
@@ -47,7 +46,7 @@ def test_simple(tmp_path: Path):
 
 
 def test_fakeroot(tmp_path: Path):
-    get_temp_path.TEMP_PATH = tmp_path
+    BuildLocation()(tmp_path)
 
     save_file = tmp_path / "fakeroot.save"
     prepare_dir = tmp_path / "prepare"
@@ -58,7 +57,6 @@ def test_fakeroot(tmp_path: Path):
     (prepare_dir / "bar").mkdir()
     (prepare_dir / "a").touch()
     (prepare_dir / "bar" / "b").touch()
-
 
     fr = FakeRoot(save_file)
 

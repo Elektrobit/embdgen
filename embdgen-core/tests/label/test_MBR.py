@@ -6,7 +6,7 @@ from pathlib import Path
 import subprocess
 from dataclasses import dataclass
 
-from embdgen.core.utils.image import get_temp_path
+from embdgen.core.utils.image import BuildLocation
 from embdgen.core.utils.SizeType import SizeType
 
 from embdgen.plugins.label.MBR import MBR
@@ -82,8 +82,6 @@ class FdiskParser:
                     in_regions = True
 
 
-
-
 class TestMBR:
     def test_empty(self, tmp_path: Path):
         image = tmp_path / "image"
@@ -118,7 +116,8 @@ class TestMBR:
         assert fdisk.diskid == 0xdeadbeef
 
     def test_withParts(self, tmp_path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
+
         image = tmp_path / "image"
         obj = MBR()
 

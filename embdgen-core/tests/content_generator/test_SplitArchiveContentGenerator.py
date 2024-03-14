@@ -6,9 +6,8 @@ import subprocess
 from typing import Set
 import pytest
 
-from embdgen.core.utils.image import get_temp_path
+from embdgen.core.utils.image import BuildLocation
 from embdgen.plugins.content_generator.SplitArchiveContentGenerator import Split, SplitArchiveContentGenerator
-
 
 
 def create_split(name: str, root: str, remove_root: bool = False) -> Split:
@@ -97,7 +96,7 @@ class TestSplitArchiveContentGenerator:
         ], cwd=prep_dir, check=True)
 
     def test_simple(self, tmp_path: Path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
 
         obj = SplitArchiveContentGenerator()
         obj.name = "split"
@@ -111,7 +110,6 @@ class TestSplitArchiveContentGenerator:
 
         obj.splits[0].prepare()
         obj.splits[1].prepare() # This should do nothing
-
 
         assert set(map(lambda x: str(x.relative_to(Path(obj.splits[0].tmpDir.name))), obj.splits[0].files)) == set(["mp1.file1", "mp1.file2"])
         assert get_tree(Path(obj.splits[0].tmpDir.name)) == set(["mp1.file1", "mp1.file2"])
@@ -130,7 +128,7 @@ class TestSplitArchiveContentGenerator:
         ])
 
     def test_non_exisiting_split(self, tmp_path: Path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
 
         obj = SplitArchiveContentGenerator()
         obj.name = "split"

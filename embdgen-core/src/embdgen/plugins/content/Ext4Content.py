@@ -9,7 +9,12 @@ import shutil
 from embdgen.core.utils.class_factory import Config
 from embdgen.core.content.BinaryContent import BinaryContent
 from embdgen.core.content.FilesContentProvider import FilesContentProvider
-from embdgen.core.utils.image import create_empty_image, copy_sparse, get_temp_file, get_temp_path
+from embdgen.core.utils.image import (
+    create_empty_image,
+    copy_sparse,
+    get_temp_file,
+    BuildLocation,
+)
 from embdgen.core.utils.FakeRoot import FakeRoot
 
 
@@ -30,7 +35,7 @@ class Ext4Content(BinaryContent):
     def _prepare_result(self):
         create_empty_image(self.result_file, self.size.bytes)
 
-        with TemporaryDirectory(dir=get_temp_path()) as diro:
+        with TemporaryDirectory(dir=BuildLocation().get_path()) as diro:
             tmp_dir = Path(diro)
             for file in self.content.files:
                 if file.is_dir():
@@ -43,7 +48,6 @@ class Ext4Content(BinaryContent):
                 "-d", diro,
                 self.result_file
             ], check=True)
-
 
     def do_write(self, file: io.BufferedIOBase):
         with open(self.result_file, "rb") as in_file:

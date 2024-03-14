@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from argparse import ArgumentParser
 
 from ..config.Factory import Factory
-from ..utils.image import get_temp_path
+from ..utils.image import BuildLocation
+
 
 @dataclass(init=False)
 class Arguments:
@@ -15,6 +16,7 @@ class Arguments:
     output: Path
     tempdir: Path
     filename: Path
+
 
 class CLI:
     factory = Factory()
@@ -33,8 +35,9 @@ class CLI:
         self.register_config_loaders(parser)
         parser.add_argument("-o", "--output", default="image.raw", type=Path,
                             help="Output file name (default: image.raw)")
-        parser.add_argument("-t", "--tempdir", default="tmp", type=Path,
-                            help="Temporary directory (default: tmp)")
+        parser.add_argument(
+            "-t", "--tempdir", type=Path, help="Specify another temporary directory"
+        )
         parser.add_argument("filename", type=Path, help="Config file name")
         return parser
 
@@ -48,9 +51,7 @@ class CLI:
             if options.format is None:
                 self.fatal("Unable to detect the format of the config file")
 
-        get_temp_path.TEMP_PATH = options.tempdir # type: ignore
-        get_temp_path.TEMP_PATH.mkdir(parents=True, exist_ok=True) # type: ignore
-
+        BuildLocation().set_path(options.tempdir)
         label = self.factory.by_type(options.format)().load(options.filename) # type: ignore
 
         print("Preparing...")
@@ -62,12 +63,13 @@ class CLI:
         print(f"\nWriting image to {options.output}")
         label.create(options.output)
 
+        BuildLocation().remove()
+
     def probe_format(self, filename: Path) -> Optional[str]:
         for name, typ in self.factory.class_map().items():
             if typ.probe(filename):
                 return name
         return None
-
 
     def fatal(self, msg: str) -> NoReturn:
         sys.exit(f"FATAL: {msg}")

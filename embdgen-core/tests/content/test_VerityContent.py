@@ -4,7 +4,7 @@ import pytest
 from pathlib import Path
 
 from embdgen.core.utils.SizeType import SizeType
-from embdgen.core.utils.image import create_empty_image, get_temp_path
+from embdgen.core.utils.image import create_empty_image, BuildLocation
 from embdgen.plugins.content.RawContent import RawContent
 from embdgen.plugins.content.VerityContent import VerityContent
 
@@ -39,7 +39,7 @@ class TestVerityContent():
         expected_root_hash: str,
         tmp_path: Path
     ):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
         metadata_file = tmp_path / "metadata.txt"
         input_file = tmp_path / "input"
         image_file = tmp_path / "image"
@@ -60,14 +60,13 @@ class TestVerityContent():
             obj.data_block_size = SizeType(data_block_size)
         if hash_block_size:
             obj.hash_block_size = SizeType(hash_block_size)
-        
 
         obj.use_internal_implementation = use_internal_implementation
         obj.prepare()
 
         assert metadata_file.exists() and metadata_file.stat().st_size > 200
 
-        #print(metadata_file.read_text())
+        # print(metadata_file.read_text())
 
         if expected_root_hash:
             assert [line.split(":") for line in  metadata_file.read_text().splitlines() if line.startswith("Root hash")][0][1].strip() == expected_root_hash
@@ -83,7 +82,7 @@ class TestVerityContent():
         assert image_file.stat().st_size == size + expected_hashtable_size
 
     def test_not_block_size_aligned(self, tmp_path: Path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
         input_file = tmp_path / "input"
         create_empty_image(input_file, 4096 * 2 - 1)
 

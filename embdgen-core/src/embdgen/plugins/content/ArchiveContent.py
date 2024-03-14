@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 
 from embdgen.core.utils.class_factory import Config
 from embdgen.core.content.FilesContentProvider import FilesContentProvider
-from embdgen.core.utils.image import get_temp_path
+from embdgen.core.utils.image import BuildLocation
 
 @Config("archive")
 class ArchiveContent(FilesContentProvider):
@@ -25,7 +25,9 @@ class ArchiveContent(FilesContentProvider):
         return self._files or []
 
     def prepare(self) -> None:
-        self._tmpDir = TemporaryDirectory(dir=get_temp_path()) #pylint: disable=consider-using-with
+        self._tmpDir = TemporaryDirectory(  # pylint: disable=consider-using-with
+            dir=BuildLocation().get_path()
+        )
         tmpDir = Path(self._tmpDir.name)
 
         self._fakeroot.run([
@@ -35,7 +37,6 @@ class ArchiveContent(FilesContentProvider):
         ], check=True)
 
         self._files = list(tmpDir.iterdir())
-
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.archive})"
