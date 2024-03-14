@@ -103,7 +103,10 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: O
 
 
 def get_temp_path() -> Path:
-    return BuildLocation().path
+    bl = BuildLocation()
+    if bl.path is not None:
+        return bl.path
+    raise Exception("Temporary path was not initalised")
 
 
 def get_temp_file(ext: str="") -> Path:
