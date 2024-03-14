@@ -37,9 +37,9 @@ class Split(FilesContentProvider):
     @property
     def tmpDir(self) -> TemporaryDirectory:
         if not self._tmpDir:
-            self._tmpDir = TemporaryDirectory(
+            self._tmpDir = TemporaryDirectory(  # pylint: disable=consider-using-with
                 dir=BuildLocation().get_path()
-            )  # pylint: disable=consider-using-with
+            )
         return self._tmpDir
 
     def init(self, base: "SplitArchiveContentGenerator", fakeroot: FakeRoot):

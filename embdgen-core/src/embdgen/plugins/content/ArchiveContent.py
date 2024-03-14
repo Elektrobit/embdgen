@@ -25,9 +25,9 @@ class ArchiveContent(FilesContentProvider):
         return self._files or []
 
     def prepare(self) -> None:
-        self._tmpDir = TemporaryDirectory(
+        self._tmpDir = TemporaryDirectory(  # pylint: disable=consider-using-with
             dir=BuildLocation().get_path()
-        )  # pylint: disable=consider-using-with
+        )
         tmpDir = Path(self._tmpDir.name)
 
         self._fakeroot.run([
