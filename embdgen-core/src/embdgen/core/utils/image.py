@@ -29,7 +29,7 @@ class BuildLocation:
             )
         return cls.__instance
 
-    def __call__(self, p: Path | None) -> BuildLocation:
+    def __call__(self, p: Path | None = None) -> BuildLocation:
         if p is not None:
             self.remove()
             self.path = p
@@ -39,6 +39,10 @@ class BuildLocation:
     def remove(self) -> None:
         if self.path is not None and os.path.exists(self.path):
             shutil.rmtree(self.path)
+
+    @staticmethod
+    def get_path() -> Path | None:
+        return BuildLocation().path
 
 
 def create_empty_image(filename: Path, size: int) -> None:
@@ -102,12 +106,5 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: O
         out_file.seek(cur_pos)
 
 
-def get_temp_path() -> Path:
-    bl = BuildLocation()
-    if bl.path is not None:
-        return bl.path
-    raise Exception("Temporary path was not initalised")
-
-
 def get_temp_file(ext: str="") -> Path:
-    return Path(tempfile.mktemp(dir=get_temp_path(), suffix=ext))
+    return Path(tempfile.mktemp(dir=BuildLocation().get_path(), suffix=ext))
