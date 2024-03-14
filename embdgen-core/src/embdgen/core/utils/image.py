@@ -30,8 +30,8 @@ class BuildLocation:
         return cls.__instance
 
     def __call__(self, p: Path | None) -> BuildLocation:
-        self.remove()
         if p is not None:
+            self.remove()
             self.path = p
             self.path.mkdir(parents=True, exist_ok=True)
         return self
