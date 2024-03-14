@@ -18,7 +18,7 @@ class TestConfig(BaseConfig):
     @classmethod
     def probe(cls, _filename: Path) -> bool:
         return True
-    
+
 class TestConfig2(BaseConfig):
     was_called = False
     def load(self, filename: Path):
@@ -78,7 +78,7 @@ def test_complete(mocker: MockerFixture, capsys: pytest.CaptureFixture[str], tmp
     ])
 
     assert output_file.exists()
-    assert tmp_dir.exists()
+    assert not tmp_dir.exists()
 
     capsys.readouterr() # suppress output
 
@@ -98,6 +98,6 @@ def test_complete_explit_format(mocker: MockerFixture, capsys: pytest.CaptureFix
 
     assert TestConfig2.was_called
     assert output_file.exists()
-    assert tmp_dir.exists()
+    assert not tmp_dir.exists()
 
     capsys.readouterr() # suppress output

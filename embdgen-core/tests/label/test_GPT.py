@@ -6,7 +6,7 @@ import subprocess
 from dataclasses import dataclass
 import pytest
 
-from embdgen.core.utils.image import get_temp_path
+from embdgen.core.utils.image import BuildLocation
 from embdgen.core.utils.SizeType import SizeType
 
 from embdgen.plugins.label.GPT import GPT
@@ -71,11 +71,10 @@ class FdiskParser:
                     in_regions = True
 
 
-
-
 class TestGPT:
     def test_withParts(self, tmp_path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
+
         image = tmp_path / "image"
         obj = GPT()
 
@@ -116,7 +115,6 @@ class TestGPT:
         assert len(fdisk.regions) == 2
         assert fdisk.regions[0].start_sector == 35
         assert fdisk.regions[1].start_sector == 37
-
 
     def test_overlap_primary(self):
         obj = GPT()

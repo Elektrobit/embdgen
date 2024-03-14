@@ -7,7 +7,7 @@ import pytest
 
 from embdgen.plugins.content.ResizeExt4Content import ResizeExt4Content
 from embdgen.plugins.content.RawContent import RawContent
-from embdgen.core.utils.image import create_empty_image, get_temp_path
+from embdgen.core.utils.image import create_empty_image, BuildLocation
 from embdgen.core.utils.SizeType import SizeType
 
 
@@ -27,7 +27,7 @@ def get_ext4_size(filename: Path) -> int:
 
 class TestResizeExt4:
     def test_resize_0(self, tmp_path: Path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
         test_fs = tmp_path / "ext4.img"
 
         create_empty_image(str(test_fs), 10 * 1024 * 1024)
@@ -52,7 +52,7 @@ class TestResizeExt4:
         assert get_ext4_size(output) == get_ext4_size(test_fs), "Filesystem was not resized"
 
     def test_resize(self, tmp_path: Path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
         test_fs = tmp_path / "ext4.img"
 
         create_empty_image(str(test_fs), 10 * 1024 * 1024)
