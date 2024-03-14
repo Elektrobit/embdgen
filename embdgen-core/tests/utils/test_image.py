@@ -5,7 +5,7 @@ import pytest
 from pathlib import Path
 from io import BytesIO
 
-from embdgen.core.utils.image import create_empty_image, copy_sparse, get_temp_path
+from embdgen.core.utils.image import create_empty_image, copy_sparse, BuildLocation
 
 
 def test_create_empty_image(tmp_path: Path):
@@ -26,7 +26,7 @@ def test_copy_sparse(tmp_path: Path):
 
     with file_path.open("rb+") as out_file:
         copy_sparse(out_file, in_file, 1024)
-    
+
     assert file_path.stat().st_size == 1024 * 1024
 
     with file_path.open("rb") as a_file:
@@ -89,4 +89,4 @@ def test_copy_spares_after_end(tmp_path: Path):
 
 def test_get_temp_path():
     """ Just for 100% coverage"""
-    assert isinstance(get_temp_path(), Path)
+    assert isinstance(BuildLocation().get_path(), Path)
