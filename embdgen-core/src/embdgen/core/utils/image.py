@@ -39,7 +39,7 @@ class BuildLocation:
     set_path = __call__
 
     def remove(self) -> None:
-        if self.path is not None and os.path.exists(self.path):
+        if self.path is not None and self.path.exists():
             shutil.rmtree(self.path)
 
     @staticmethod
