@@ -36,6 +36,8 @@ class BuildLocation:
             self.path.mkdir(parents=True, exist_ok=True)
         return self
 
+    set_path = __call__
+
     def remove(self) -> None:
         if self.path is not None and os.path.exists(self.path):
             shutil.rmtree(self.path)
