@@ -5,12 +5,11 @@ import pytest
 from cryptography.hazmat.primitives.asymmetric import rsa, ec, padding
 from cryptography.hazmat.primitives import serialization, hashes
 
-from embdgen.core.utils.image import get_temp_path
+from embdgen.core.utils.image import BuildLocation
 from embdgen.core.utils.SizeType import SizeType
 from embdgen.plugins.content.CominitContent import CominitContent
 from embdgen.plugins.content.RawContent import RawContent
 from embdgen.plugins.content.VerityContent import VerityContent
-
 
 
 # Note: only 4096 bytes signature supported, because cominit
@@ -31,7 +30,8 @@ def verify_signature(metadata: bytes, sig: bytes):
 
 class TestCominitContent:
     def test_plain(self, tmp_path: Path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
+
         image_file = tmp_path / "image"
         content_file = tmp_path / "content"
         content_file.write_bytes(b"\1" * 4096)
@@ -68,9 +68,8 @@ class TestCominitContent:
 
         verify_signature(metadata, sig)
 
-
     def test_verity(self, tmp_path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
         image_file = tmp_path / "image"
         content_file = tmp_path / "content"
         content_file.write_bytes(b"\1" * 4096 * 2)
@@ -138,7 +137,6 @@ class TestCominitContent:
         with pytest.raises(KeyError):
             obj.prepare()
 
-
     def test_verity_writable(self):
         obj = CominitContent()
         obj.dm_type = "verity"
@@ -150,7 +148,8 @@ class TestCominitContent:
             obj.prepare()
 
     def test_verity_invalid_bocksizes(self, tmp_path):
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
+
         image_file = tmp_path / "image"
         content_file = tmp_path / "content"
         content_file.write_bytes(b"\1" * 512 * 2)

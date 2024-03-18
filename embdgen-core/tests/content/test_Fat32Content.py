@@ -7,7 +7,7 @@ import pytest
 
 from embdgen.plugins.content.FilesContent import FilesContent
 from embdgen.plugins.content.Fat32Content import Fat32Content
-from embdgen.core.utils.image import get_temp_path
+from embdgen.core.utils.image import BuildLocation
 from embdgen.core.utils.SizeType import SizeType
 
 class TestFat32Content:
@@ -15,7 +15,8 @@ class TestFat32Content:
         """
         Fat32 only supports files content right now
         """
-        get_temp_path.TEMP_PATH = tmp_path
+        BuildLocation()(tmp_path)
+
         image = tmp_path / "image"
 
         test_files = []

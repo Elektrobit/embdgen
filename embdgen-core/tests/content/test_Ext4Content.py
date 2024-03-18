@@ -12,7 +12,7 @@ import pytest
 from embdgen.plugins.content.Ext4Content import Ext4Content
 from embdgen.plugins.content.FilesContent import FilesContent
 from embdgen.plugins.content.ArchiveContent import ArchiveContent
-from embdgen.core.utils.image import get_temp_file, get_temp_path
+from embdgen.core.utils.image import get_temp_file, BuildLocation
 from embdgen.core.utils.SizeType import SizeType
 from embdgen.core.utils.FakeRoot import FakeRoot
 
@@ -117,7 +117,8 @@ class DebugFs():
 
 
 def test_from_files(tmp_path: Path):
-    get_temp_path.TEMP_PATH = tmp_path
+    BuildLocation()(tmp_path)
+
     image = tmp_path / "image"
     test_dir = tmp_path / "test_dir"
 
@@ -150,7 +151,7 @@ def test_from_files(tmp_path: Path):
 
 
 def test_from_archive_fakeroot(tmp_path: Path):
-    get_temp_path.TEMP_PATH = tmp_path
+    BuildLocation()(tmp_path)
 
     image = tmp_path / "image"
     archive = tmp_path / "archive.tar"

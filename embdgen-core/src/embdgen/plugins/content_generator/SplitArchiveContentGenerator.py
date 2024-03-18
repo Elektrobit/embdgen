@@ -11,7 +11,7 @@ from embdgen.core.utils.FakeRoot import FakeRoot
 from embdgen.core.utils.class_factory import Config
 
 from embdgen.core.content_generator.BaseContentGenerator import BaseContentGenerator
-from embdgen.core.utils.image import get_temp_path
+from embdgen.core.utils.image import BuildLocation
 from embdgen.plugins.content.ArchiveContent import ArchiveContent
 
 
@@ -37,7 +37,9 @@ class Split(FilesContentProvider):
     @property
     def tmpDir(self) -> TemporaryDirectory:
         if not self._tmpDir:
-            self._tmpDir = TemporaryDirectory(dir=get_temp_path()) #pylint: disable=consider-using-with
+            self._tmpDir = TemporaryDirectory(  # pylint: disable=consider-using-with
+                dir=BuildLocation().get_path()
+            )
         return self._tmpDir
 
     def init(self, base: "SplitArchiveContentGenerator", fakeroot: FakeRoot):
