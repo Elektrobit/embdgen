@@ -13,4 +13,12 @@ class BaseConfig(ABC):
 
     @abstractmethod
     def load(self, filename: Path) -> BaseLabel:
-        pass
+        """
+        Allows to load the configuration from the filename.
+        """
+
+    @abstractmethod
+    def load_str(self, data: str) -> BaseLabel:
+        """
+        Allows to load the configuration from the source string.
+        """
