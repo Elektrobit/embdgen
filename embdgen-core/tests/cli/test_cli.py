@@ -15,6 +15,9 @@ class TestConfig(BaseConfig):
     def load(self, filename: Path):
         return MBR()
 
+    def load_str(self, data: str):
+        return MBR()
+
     @classmethod
     def probe(cls, _filename: Path) -> bool:
         return True
@@ -22,6 +25,10 @@ class TestConfig(BaseConfig):
 class TestConfig2(BaseConfig):
     was_called = False
     def load(self, filename: Path):
+        self.__class__.was_called = True
+        return MBR()
+
+    def load_str(self, data: str):
         self.__class__.was_called = True
         return MBR()
 

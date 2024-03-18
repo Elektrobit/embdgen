@@ -8,6 +8,9 @@ class ConfigFoo(BaseConfig):
     def load(self, filename: Path) -> BaseLabel:
         return None
 
+    def load_str(self, data: str) -> BaseLabel:
+        return None
+
 def test_BaseConfig():
     c = ConfigFoo()
     assert c.probe(Path("")) is False
