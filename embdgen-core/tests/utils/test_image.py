@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
+import gc
 import pytest
 
 from pathlib import Path
@@ -89,12 +90,22 @@ def test_copy_spares_after_end(tmp_path: Path):
 
 
 def test_BuildLocation_remove(tmp_path: Path):
+    BuildLocation().remove() # Reset to known state
+
     initial_path = BuildLocation().path
-
     assert initial_path.exists()
-
-    BuildLocation().set_path(tmp_path)
-
-    assert BuildLocation().path == tmp_path
-
+    BuildLocation().remove()
     assert not initial_path.exists()
+
+    initial_path = BuildLocation().path
+    BuildLocation().set_path(tmp_path)
+    assert BuildLocation().path == tmp_path
+    assert not initial_path.exists()
+    BuildLocation().remove()
+    assert tmp_path.exists()
+
+
+    BuildLocation().set_path(tmp_path / "foo")
+    assert (tmp_path / "foo").exists()
+    BuildLocation().remove()
+    assert not (tmp_path / "foo").exists()

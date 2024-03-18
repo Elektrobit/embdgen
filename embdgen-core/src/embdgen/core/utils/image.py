@@ -21,20 +21,32 @@ class BuildLocation:
     """
     __instance: BuildLocation | None = None
     _path: Path
+    _was_created: bool
 
     def __new__(cls) -> BuildLocation:
         if cls.__instance is None:
             cls.__instance: BuildLocation = super(BuildLocation, cls).__new__(cls)
             cls.__instance._path = Path(tempfile.mkdtemp(prefix="embdgen-"))
+            cls.__instance._was_created = True
         return cls.__instance
 
+    def __del__(self):
+        self._remove()
+
     def set_path(self, path: Path) -> None:
-        self.remove()
+        self._remove()
         self._path = path
-        self._path.mkdir(parents=True, exist_ok=True)
+        self._was_created = False
+        if not self._path.exists():
+            self._path.mkdir(parents=True, exist_ok=True)
+            self._was_created = True
 
     def remove(self) -> None:
-        if self._path.exists():
+        self._remove()
+        BuildLocation.__instance = None
+
+    def _remove(self) -> None:
+        if self._was_created and self._path.exists():
             shutil.rmtree(self._path)
 
     @property
