@@ -15,7 +15,7 @@ class TestFat32Content:
         """
         Fat32 only supports files content right now
         """
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
 
         image = tmp_path / "image"
 

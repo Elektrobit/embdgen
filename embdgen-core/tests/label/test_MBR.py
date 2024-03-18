@@ -116,7 +116,7 @@ class TestMBR:
         assert fdisk.diskid == 0xdeadbeef
 
     def test_withParts(self, tmp_path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
 
         image = tmp_path / "image"
         obj = MBR()

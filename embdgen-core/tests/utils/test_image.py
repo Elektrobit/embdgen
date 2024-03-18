@@ -87,6 +87,14 @@ def test_copy_spares_after_end(tmp_path: Path):
         copy_sparse(out_file, in_file)
     assert file_path.stat().st_size == 4096 * 3
 
-def test_get_temp_path():
-    """ Just for 100% coverage"""
-    assert isinstance(BuildLocation().get_path(), Path)
+
+def test_BuildLocation_remove(tmp_path: Path):
+    initial_path = BuildLocation().path
+
+    assert initial_path.exists()
+
+    BuildLocation().set_path(tmp_path)
+
+    assert BuildLocation().path == tmp_path
+
+    assert not initial_path.exists()

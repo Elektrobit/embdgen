@@ -96,7 +96,7 @@ class TestSplitArchiveContentGenerator:
         ], cwd=prep_dir, check=True)
 
     def test_simple(self, tmp_path: Path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
 
         obj = SplitArchiveContentGenerator()
         obj.name = "split"
@@ -128,7 +128,7 @@ class TestSplitArchiveContentGenerator:
         ])
 
     def test_non_exisiting_split(self, tmp_path: Path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
 
         obj = SplitArchiveContentGenerator()
         obj.name = "split"

@@ -20,31 +20,26 @@ class BuildLocation:
     Temporary location of the builds
     """
     __instance: BuildLocation | None = None
-    path: Path | None = None
+    _path: Path
 
     def __new__(cls) -> BuildLocation:
         if cls.__instance is None:
-            cls.__instance: BuildLocation = super(BuildLocation, cls).__new__(cls)(
-                Path(tempfile.mkdtemp(prefix="embdgen-"))
-            )
+            cls.__instance: BuildLocation = super(BuildLocation, cls).__new__(cls)
+            cls.__instance._path = Path(tempfile.mkdtemp(prefix="embdgen-"))
         return cls.__instance
 
-    def __call__(self, p: Path | None = None) -> BuildLocation:
-        if p is not None:
-            self.remove()
-            self.path = p
-            self.path.mkdir(parents=True, exist_ok=True)
-        return self
-
-    set_path = __call__
+    def set_path(self, path: Path) -> None:
+        self.remove()
+        self._path = path
+        self._path.mkdir(parents=True, exist_ok=True)
 
     def remove(self) -> None:
-        if self.path is not None and self.path.exists():
-            shutil.rmtree(self.path)
+        if self._path.exists():
+            shutil.rmtree(self._path)
 
-    @staticmethod
-    def get_path() -> Path | None:
-        return BuildLocation().path
+    @property
+    def path(self):
+        return self._path
 
 
 def create_empty_image(filename: Path, size: int) -> None:
@@ -109,4 +104,4 @@ def copy_sparse(out_file: io.BufferedIOBase, in_file: io.BufferedIOBase, size: O
 
 
 def get_temp_file(ext: str="") -> Path:
-    return Path(tempfile.mktemp(dir=BuildLocation().get_path(), suffix=ext))
+    return Path(tempfile.mktemp(dir=BuildLocation().path, suffix=ext))

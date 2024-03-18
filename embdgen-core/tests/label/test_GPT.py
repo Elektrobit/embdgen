@@ -73,7 +73,7 @@ class FdiskParser:
 
 class TestGPT:
     def test_withParts(self, tmp_path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
 
         image = tmp_path / "image"
         obj = GPT()

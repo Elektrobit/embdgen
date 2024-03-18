@@ -30,7 +30,7 @@ def verify_signature(metadata: bytes, sig: bytes):
 
 class TestCominitContent:
     def test_plain(self, tmp_path: Path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
 
         image_file = tmp_path / "image"
         content_file = tmp_path / "content"
@@ -69,7 +69,7 @@ class TestCominitContent:
         verify_signature(metadata, sig)
 
     def test_verity(self, tmp_path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
         image_file = tmp_path / "image"
         content_file = tmp_path / "content"
         content_file.write_bytes(b"\1" * 4096 * 2)
@@ -148,7 +148,7 @@ class TestCominitContent:
             obj.prepare()
 
     def test_verity_invalid_bocksizes(self, tmp_path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
 
         image_file = tmp_path / "image"
         content_file = tmp_path / "content"

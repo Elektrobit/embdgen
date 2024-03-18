@@ -27,7 +27,7 @@ def get_ext4_size(filename: Path) -> int:
 
 class TestResizeExt4:
     def test_resize_0(self, tmp_path: Path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
         test_fs = tmp_path / "ext4.img"
 
         create_empty_image(str(test_fs), 10 * 1024 * 1024)
@@ -52,7 +52,7 @@ class TestResizeExt4:
         assert get_ext4_size(output) == get_ext4_size(test_fs), "Filesystem was not resized"
 
     def test_resize(self, tmp_path: Path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
         test_fs = tmp_path / "ext4.img"
 
         create_empty_image(str(test_fs), 10 * 1024 * 1024)

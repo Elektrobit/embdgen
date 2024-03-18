@@ -117,7 +117,7 @@ class DebugFs():
 
 
 def test_from_files(tmp_path: Path):
-    BuildLocation()(tmp_path)
+    BuildLocation().set_path(tmp_path)
 
     image = tmp_path / "image"
     test_dir = tmp_path / "test_dir"
@@ -151,7 +151,7 @@ def test_from_files(tmp_path: Path):
 
 
 def test_from_archive_fakeroot(tmp_path: Path):
-    BuildLocation()(tmp_path)
+    BuildLocation().set_path(tmp_path)
 
     image = tmp_path / "image"
     archive = tmp_path / "archive.tar"

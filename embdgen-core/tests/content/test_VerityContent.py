@@ -39,7 +39,7 @@ class TestVerityContent():
         expected_root_hash: str,
         tmp_path: Path
     ):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
         metadata_file = tmp_path / "metadata.txt"
         input_file = tmp_path / "input"
         image_file = tmp_path / "image"
@@ -82,7 +82,7 @@ class TestVerityContent():
         assert image_file.stat().st_size == size + expected_hashtable_size
 
     def test_not_block_size_aligned(self, tmp_path: Path):
-        BuildLocation()(tmp_path)
+        BuildLocation().set_path(tmp_path)
         input_file = tmp_path / "input"
         create_empty_image(input_file, 4096 * 2 - 1)
 

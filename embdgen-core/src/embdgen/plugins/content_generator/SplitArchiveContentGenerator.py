@@ -38,7 +38,7 @@ class Split(FilesContentProvider):
     def tmpDir(self) -> TemporaryDirectory:
         if not self._tmpDir:
             self._tmpDir = TemporaryDirectory(  # pylint: disable=consider-using-with
-                dir=BuildLocation().get_path()
+                dir=BuildLocation().path
             )
         return self._tmpDir
 

@@ -20,7 +20,7 @@ def calc_umask(mode: int) -> str:
     return f"{mode:o}"
 
 def test_simple(tmp_path: Path):
-    BuildLocation()(tmp_path)
+    BuildLocation().set_path(tmp_path)
 
     prepare_dir = tmp_path / "prepare"
     archive = tmp_path / "archive.tar"
@@ -46,7 +46,7 @@ def test_simple(tmp_path: Path):
 
 
 def test_fakeroot(tmp_path: Path):
-    BuildLocation()(tmp_path)
+    BuildLocation().set_path(tmp_path)
 
     save_file = tmp_path / "fakeroot.save"
     prepare_dir = tmp_path / "prepare"

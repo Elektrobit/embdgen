@@ -35,7 +35,7 @@ class Ext4Content(BinaryContent):
     def _prepare_result(self):
         create_empty_image(self.result_file, self.size.bytes)
 
-        with TemporaryDirectory(dir=BuildLocation().get_path()) as diro:
+        with TemporaryDirectory(dir=BuildLocation().path) as diro:
             tmp_dir = Path(diro)
             for file in self.content.files:
                 if file.is_dir():
