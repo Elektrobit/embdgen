@@ -51,8 +51,7 @@ class CLI:
             if options.format is None:
                 self.fatal("Unable to detect the format of the config file")
 
-        BuildLocation()(options.tempdir)
-
+        BuildLocation().set_path(options.tempdir)
         label = self.factory.by_type(options.format)().load(options.filename) # type: ignore
 
         print("Preparing...")
