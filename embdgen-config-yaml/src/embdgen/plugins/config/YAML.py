@@ -25,21 +25,24 @@ class YAML(BaseConfig):
             return False
 
     def load(self, filename: Path) -> BaseLabel:
+        with filename.open(encoding="utf-8") as f:
+            return self.load_str(f.read())
+
+    def load_str(self, data: str) -> BaseLabel:
         root_schema = y.OrValidator(
             LabelValidator(),
             y.Map({
-                y.Optional('contents'): y.Seq(ContentGeneratorValidator()),
-                'image': LabelValidator()
+                y.Optional("contents"): y.Seq(ContentGeneratorValidator()),
+                "image": LabelValidator()
             })
         )
 
         ContentRegistry.instance().clear()
-        with filename.open(encoding="utf-8") as f:
-            conf = y.load(f.read(), root_schema)
+        conf = y.load(data, root_schema)
 
         if conf.is_mapping() and "image" in conf:
-            image = conf["image"].value
+            label = conf["image"].value
         else:
-            image = conf.value
+            label = conf.value
 
-        return image
+        return label
