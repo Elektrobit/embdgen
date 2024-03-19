@@ -14,7 +14,7 @@ from ..utils.image import BuildLocation
 class Arguments:
     format: Optional[str]
     output: Path
-    tempdir: Path
+    tempdir: Optional[Path]
     filename: Path
 
 
@@ -51,7 +51,8 @@ class CLI:
             if options.format is None:
                 self.fatal("Unable to detect the format of the config file")
 
-        BuildLocation().set_path(options.tempdir)
+        if options.tempdir:
+            BuildLocation().set_path(options.tempdir)
         label = self.factory.by_type(options.format)().load(options.filename) # type: ignore
 
         print("Preparing...")
