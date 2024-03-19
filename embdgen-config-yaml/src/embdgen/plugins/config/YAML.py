@@ -24,24 +24,25 @@ class YAML(BaseConfig):
         except (UnicodeDecodeError, y.YAMLError):
             return False
 
-    def _get_schema(self) -> y.OrValidator:
-        return y.OrValidator(
-            LabelValidator(),
-            y.Map(
-                {
-                    y.Optional("contents"): y.Seq(ContentGeneratorValidator()),
-                    "image": LabelValidator(),
-                }
-            ),
-        )
-
-    def _get_label(self, cfg) -> BaseLabel:
-        return cfg["image"].value if cfg.is_mapping() and "image" in cfg else cfg.value
-
     def load(self, filename: Path) -> BaseLabel:
-        ContentRegistry.instance().clear()
         with filename.open(encoding="utf-8") as f:
-            return self._get_label(y.load(f.read(), self._get_schema()))
+            return self.load_str(f.read())
 
     def load_str(self, data: str) -> BaseLabel:
-        return self._get_label(y.load(data, schema=self._get_schema()))
+        root_schema = y.OrValidator(
+            LabelValidator(),
+            y.Map({
+                y.Optional("contents"): y.Seq(ContentGeneratorValidator()),
+                "image": LabelValidator()
+            })
+        )
+
+        ContentRegistry.instance().clear()
+        conf = y.load(data, root_schema)
+
+        if conf.is_mapping() and "image" in conf:
+            label = conf["image"].value
+        else:
+            label = conf.value
+
+        return label
