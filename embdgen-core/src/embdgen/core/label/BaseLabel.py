@@ -4,6 +4,7 @@ import abc
 from typing import List, Optional
 from pathlib import Path
 import parted # type: ignore
+from typing_extensions import TypeGuard
 
 from embdgen.plugins.region.PartitionRegion import PartitionRegion
 
@@ -53,16 +54,42 @@ class BaseLabel(abc.ABC):
         device = parted.getDevice(filename.as_posix())
         disk = parted.freshDisk(device, ptType)
 
-        for part in self.parts:
-            if not isinstance(part, PartitionRegion):
-                continue
+        def is_partition(x: BaseRegion) -> TypeGuard[PartitionRegion]:
+            return isinstance(x, PartitionRegion)
+
+        partitions = list(filter(is_partition, self.parts))
+        need_extended = ptType == "msdos" and len(partitions) > 4
+
+        for partIndex, part in enumerate(partitions):
+            part_type = parted.PARTITION_NORMAL
+            if need_extended:
+                if partIndex >= 3:
+                    part_type = parted.PARTITION_LOGICAL
+
+                if partIndex == 3:
+                    # In the extended Partition Size, + 1 is added to include the size of the first EBR Header
+                    extPartLen = self.parts[-1].start.sectors + self.parts[-1].size.sectors - part.start.sectors + 1
+
+                    geometryExtended = parted.Geometry(device, start=(part.start.sectors - 1), length=extPartLen)
+
+                    partitionExtended = parted.Partition(
+                        disk=disk,
+                        type=parted.PARTITION_EXTENDED,
+                        geometry=geometryExtended
+                    )
+                    disk.addPartition(
+                        partition=partitionExtended,
+                        constraint=parted.Constraint(exactGeom=geometryExtended)
+                    )
+
             geometry = parted.Geometry(device, start=part.start.sectors, length=part.size.sectors)
             partition = parted.Partition(
                 disk=disk,
-                type=parted.PARTITION_NORMAL,
+                type=part_type,
                 geometry=geometry,
                 fs=parted.FileSystem(part.fstype, geometry=geometry)
             )
+
             if ptType == "msdos":
                 partition.setFlag(parted.PARTITION_LBA)
             disk.addPartition(partition=partition, constraint=parted.Constraint(exactGeom=geometry))
