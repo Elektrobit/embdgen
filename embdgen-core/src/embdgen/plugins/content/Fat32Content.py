@@ -2,11 +2,13 @@
 
 import io
 import subprocess
+from typing import Optional
 
-from embdgen.core.utils.class_factory import Config
 from embdgen.core.content.BinaryContent import BinaryContent
 from embdgen.core.content.FilesContentProvider import FilesContentProvider
-from embdgen.core.utils.image import create_empty_image, copy_sparse
+from embdgen.core.utils.class_factory import Config
+from embdgen.core.utils.image import copy_sparse, create_empty_image
+
 
 @Config("content")
 class Fat32Content(BinaryContent):
@@ -18,13 +20,18 @@ class Fat32Content(BinaryContent):
     """
     CONTENT_TYPE = "fat32"
 
-    content: FilesContentProvider
+    content: Optional[FilesContentProvider]
     """Content of this region"""
 
+    def __init__(self) -> None:
+        super().__init__()
+        self.content = None
+
     def prepare(self) -> None:
-        super().prepare()
         if self.size.is_undefined:
             raise Exception("Fat32 regions require a fixed size at the moment")
+        if self.content:
+            self.content.prepare()
 
 
     def _prepare_result(self):
@@ -39,16 +46,17 @@ class Fat32Content(BinaryContent):
             stderr=subprocess.STDOUT
         )
 
-        for file in self.content.files:
-            self.content.fakeroot.run(
-                [
-                    "mcopy",
-                    "-i", self.result_file,
-                    file, "::"
-                ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT
-            )
+        if self.content:
+            for file in self.content.files:
+                self.content.fakeroot.run(
+                    [
+                        "mcopy",
+                        "-i", self.result_file,
+                        file, "::"
+                    ],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT
+                )
 
 
     def do_write(self, file: io.BufferedIOBase):
@@ -57,4 +65,4 @@ class Fat32Content(BinaryContent):
 
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({', '.join(map(str, self.content.files))})"
+        return f"{self.__class__.__name__}({', '.join(map(str, self.content.files)) if self.content else ''})"

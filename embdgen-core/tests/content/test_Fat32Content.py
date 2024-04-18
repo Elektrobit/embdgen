@@ -5,16 +5,33 @@ import subprocess
 
 import pytest
 
+from ..test_utils import SimpleCommandParser
+
 from embdgen.plugins.content.FilesContent import FilesContent
 from embdgen.plugins.content.Fat32Content import Fat32Content
 from embdgen.core.utils.image import BuildLocation
 from embdgen.core.utils.SizeType import SizeType
 
+
+class MInfo(SimpleCommandParser):
+    ATTRIBUTE_MAP =  {
+        "sector size": ("sector_size", lambda x: int(x.split()[0])),
+        "big size": ("sectors", lambda x: int(x.split()[0]))
+    }
+
+    sectors: int = -1
+    sector_size: int = -1
+
+    def __init__(self, image: Path) -> None:
+        super().__init__(["minfo", "-i", image])
+
+    @property
+    def size(self) -> int:
+        return self.sectors * self.sector_size
+
+
 class TestFat32Content:
     def test_files(self, tmp_path: Path):
-        """
-        Fat32 only supports files content right now
-        """
         BuildLocation().set_path(tmp_path)
 
         image = tmp_path / "image"
@@ -47,3 +64,18 @@ class TestFat32Content:
         ], stdout=subprocess.PIPE, check=True, encoding="ascii")
 
         assert sorted(map(lambda x: x[3:], res.stdout.splitlines())) == sorted(map(lambda x: x.name, test_files))
+
+    def test_empty(self, tmp_path: Path) -> None:
+        BuildLocation().set_path(tmp_path)
+        image = tmp_path / "image"
+
+        obj = Fat32Content()
+        obj.size = SizeType.parse("100 MB")
+        obj.prepare()
+
+        with image.open("wb") as out_file:
+            obj.write(out_file)
+
+        minfo = MInfo(image)
+        assert minfo.ok, minfo.error
+

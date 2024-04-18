@@ -9,6 +9,8 @@ import re
 import stat
 import pytest
 
+from ..test_utils import SimpleCommandParser
+
 from embdgen.plugins.content.Ext4Content import Ext4Content
 from embdgen.plugins.content.FilesContent import FilesContent
 from embdgen.plugins.content.ArchiveContent import ArchiveContent
@@ -116,6 +118,26 @@ class DebugFs():
         return DebugFs.Entry(Path(path).name, mode, uid, gid, size, major, minor)
 
 
+class Tune2Fs(SimpleCommandParser):
+    ATTRIBUTE_MAP = {
+        "Block count": ("block_count", int),
+        "Block size":  ("block_size", int),
+        "Filesystem magic number": ("magic", lambda x: int(x, 16))
+    }
+
+    block_count: int = -1
+    block_size: int = -1
+    magic: int = -1
+
+    def __init__(self, image: Path) -> None:
+        super().__init__(["tune2fs", "-l", image])
+
+    @property
+    def size(self):
+        return self.block_count * self.block_size
+
+
+
 def test_from_files(tmp_path: Path):
     BuildLocation().set_path(tmp_path)
 
@@ -197,3 +219,20 @@ def test_from_archive_fakeroot(tmp_path: Path):
     assert node_stat.is_chr
     assert node_stat.major == 0x123
     assert node_stat.minor == 0x456
+
+
+def test_empty_ext4(tmp_path: Path) -> None:
+    BuildLocation().set_path(tmp_path)
+    image = tmp_path / "image"
+
+    obj = Ext4Content()
+    obj.size = SizeType.parse("100 MB")
+    obj.prepare()
+
+    with image.open("wb") as f:
+        obj.write(f)
+
+    tune2fs = Tune2Fs(image)
+    assert tune2fs.ok
+    assert tune2fs.size == SizeType.parse("100 MB").bytes
+    assert tune2fs.magic == 0xEF53
