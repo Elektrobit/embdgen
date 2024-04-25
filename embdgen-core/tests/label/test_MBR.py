@@ -165,6 +165,7 @@ class TestMBR:
         assert len(fdisk.regions) == 2
         assert fdisk.regions[0].start_sector == 13
         assert fdisk.regions[0].type_id == FdiskParser.TYPE_LINUX_NATIVE
+        assert fdisk.regions[0].boot
         assert fdisk.regions[1].start_sector == 15
         assert fdisk.regions[1].type_id == FdiskParser.TYPE_FAT32_LBA
 
