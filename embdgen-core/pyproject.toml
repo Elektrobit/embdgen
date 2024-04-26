@@ -28,7 +28,8 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = [
     "pyparted",
-    "fallocate"
+    "fallocate",
+    "typing-extensions"
 ]
 
 [project.urls]

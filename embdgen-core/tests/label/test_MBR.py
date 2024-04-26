@@ -9,10 +9,10 @@ from dataclasses import dataclass
 from embdgen.core.utils.image import BuildLocation
 from embdgen.core.utils.SizeType import SizeType
 
+from embdgen.plugins.content.EmptyContent import EmptyContent
 from embdgen.plugins.label.MBR import MBR
 from embdgen.plugins.region.EmptyRegion import EmptyRegion
 from embdgen.plugins.region.PartitionRegion import PartitionRegion
-from embdgen.plugins.region.RawRegion import RawRegion
 
 from embdgen.plugins.content.RawContent import RawContent
 from embdgen.plugins.content.FilesContent import FilesContent
@@ -30,6 +30,8 @@ class FdiskRegion:
 class FdiskParser:
     TYPE_FAT32_LBA = 0x0C
     TYPE_LINUX_NATIVE = 0x83
+    TYPE_EXTENDED = 0x05
+
 
     is_valid: bool = False
     diskid: int = None
@@ -81,6 +83,11 @@ class FdiskParser:
                 elif line.startswith("Device"):
                     in_regions = True
 
+    def __repr__(self) -> str:
+        out = []
+        for i, r in enumerate(self.regions):
+            out.append(f"{i} {r.start_sector:>5} - {r.start_sector + r.sectors:>5} ({r.sectors:>4} Sectors), {r.type_id}")
+        return "\n".join(out)
 
 class TestMBR:
     def test_empty(self, tmp_path: Path):
@@ -158,5 +165,64 @@ class TestMBR:
         assert len(fdisk.regions) == 2
         assert fdisk.regions[0].start_sector == 13
         assert fdisk.regions[0].type_id == FdiskParser.TYPE_LINUX_NATIVE
+        assert fdisk.regions[0].boot
         assert fdisk.regions[1].start_sector == 15
         assert fdisk.regions[1].type_id == FdiskParser.TYPE_FAT32_LBA
+
+    def test_four_partitions_no_extended(self, tmp_path: Path):
+        BuildLocation().set_path(tmp_path)
+        image = tmp_path / "image"
+        obj = MBR()
+
+        for i in range(4):
+            part = PartitionRegion()
+            part.name = f"Part {i}"
+            part.size = SizeType.parse("1MB")
+            part.fstype = "ext4"
+            part.content = EmptyContent()
+            obj.parts.append(part)
+        obj.prepare()
+        obj.create(image)
+
+        fdisk = FdiskParser(image)
+        assert fdisk.is_valid
+        assert len(fdisk.regions) == 4
+        for i in range(4):
+            assert fdisk.regions[i].type_id == FdiskParser.TYPE_LINUX_NATIVE
+
+    def test_extended_with_empty(self, tmp_path: Path):
+        BuildLocation().set_path(tmp_path)
+        image = tmp_path / "image"
+        obj = MBR()
+
+        for i in range(8):
+            if i == 4:
+                part = EmptyRegion()
+                part.name = f"Empty {i}"
+                part.size = SizeType.parse("12 S")
+            else:
+                part = PartitionRegion()
+                part.name = f"Part {i}"
+                part.size = SizeType.parse("1MB")
+                part.fstype = "ext4"
+                part.content = EmptyContent()
+            obj.parts.append(part)
+        obj.prepare()
+        obj.create(image)
+
+        fdisk = FdiskParser(image)
+        assert fdisk.is_valid
+        assert len(fdisk.regions) == 8
+        pos = 1
+        for i in range(3):
+            assert fdisk.regions[i].type_id == FdiskParser.TYPE_LINUX_NATIVE
+            assert fdisk.regions[i].start_sector == pos
+            pos += SizeType.parse("1MB").sectors
+        assert fdisk.regions[3].type_id == FdiskParser.TYPE_EXTENDED
+        for i in range(4, 8):
+            pos += 1
+            assert fdisk.regions[i].type_id == FdiskParser.TYPE_LINUX_NATIVE
+            assert fdisk.regions[i].start_sector == pos
+            pos += SizeType.parse("1MB").sectors
+            if i == 4:
+                pos += 12 # Empty partition

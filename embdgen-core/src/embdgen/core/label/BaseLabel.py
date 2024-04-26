@@ -4,6 +4,7 @@ import abc
 from typing import List, Optional
 from pathlib import Path
 import parted # type: ignore
+from typing_extensions import TypeGuard
 
 from embdgen.plugins.region.PartitionRegion import PartitionRegion
 
@@ -12,6 +13,53 @@ from embdgen.core.utils.image import create_empty_image
 from ..utils.class_factory import Config
 from ..region import BaseRegion
 
+class PartedInterface:
+    """
+    Contextmanager interface to parted label creation.
+
+    When used as a context manager, the class will automatically
+    commit the changes to the disk.
+    """
+
+    _device: parted.Device
+    _disk: parted.Disk
+    _label_type: str
+
+    def __init__(self, filename: Path, label_type: str) -> None:
+        self._label_type = label_type
+        self._device = parted.getDevice(filename.as_posix())
+        self._disk = parted.freshDisk(self._device, label_type)
+
+    def __enter__(self) -> "PartedInterface":
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self._disk.commit()
+
+    def add_extended_partition(self, start: int, length: int):
+        """Create an extended partition"""
+        geometry = parted.Geometry(self._device, start=start, length=length)
+        partition = parted.Partition(
+            disk=self._disk,
+            type=parted.PARTITION_EXTENDED,
+            geometry=geometry
+        )
+        self._disk.addPartition(partition=partition, constraint=parted.Constraint(exactGeom=geometry))
+
+    def add_partition(self, part: PartitionRegion, logical: bool=False, boot_partition: bool=False):
+        """Create a normal logical partition"""
+        geometry = parted.Geometry(self._device, start=part.start.sectors, length=part.size.sectors)
+        partition = parted.Partition(
+            disk=self._disk,
+            type=parted.PARTITION_LOGICAL if logical else parted.PARTITION_NORMAL,
+            geometry=geometry,
+            fs=parted.FileSystem(part.fstype, geometry=geometry)
+        )
+        if boot_partition:
+            partition.setFlag(parted.PARTITION_BOOT)
+        if self._label_type == "msdos":
+            partition.setFlag(parted.PARTITION_LBA)
+        self._disk.addPartition(partition=partition, constraint=parted.Constraint(exactGeom=geometry))
 
 @Config('parts')
 @Config('boot_partition', optional=True)
@@ -50,25 +98,27 @@ class BaseLabel(abc.ABC):
             cur_offset += part.size
 
     def _create_partition_table(self, filename: Path, ptType: str) -> None:
-        device = parted.getDevice(filename.as_posix())
-        disk = parted.freshDisk(device, ptType)
+        with PartedInterface(filename, ptType) as pInt:
 
-        for part in self.parts:
-            if not isinstance(part, PartitionRegion):
-                continue
-            geometry = parted.Geometry(device, start=part.start.sectors, length=part.size.sectors)
-            partition = parted.Partition(
-                disk=disk,
-                type=parted.PARTITION_NORMAL,
-                geometry=geometry,
-                fs=parted.FileSystem(part.fstype, geometry=geometry)
-            )
-            if ptType == "msdos":
-                partition.setFlag(parted.PARTITION_LBA)
-            disk.addPartition(partition=partition, constraint=parted.Constraint(exactGeom=geometry))
-            if part.name == self.boot_partition:
-                partition.setFlag(parted.PARTITION_BOOT)
-        disk.commit()
+            def is_partition(x: BaseRegion) -> TypeGuard[PartitionRegion]:
+                return isinstance(x, PartitionRegion)
+
+            partitions = list(filter(is_partition, self.parts))
+            need_extended = ptType == "msdos" and len(partitions) > 4
+
+            for partIndex, part in enumerate(partitions):
+                if need_extended and partIndex == 3:
+                    # In the extended Partition Size, + 1 is added to include the size of the first EBR Header
+                    pInt.add_extended_partition(
+                        part.start.sectors - 1,
+                        self.parts[-1].start.sectors + self.parts[-1].size.sectors - part.start.sectors + 1
+                    )
+
+                pInt.add_partition(
+                    part,
+                    need_extended and partIndex >= 3,
+                    boot_partition=part.name == self.boot_partition
+                )
 
     def create(self, filename: Path) -> None:
         size = self.parts[-1].start + self.parts[-1].size
