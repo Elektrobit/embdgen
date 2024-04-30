@@ -7,7 +7,7 @@ Maintainer: AOX Technologies GmbH <info@aox.de>
 Standards-Version: 4.5.0
 Build-Depends: debhelper (>= 11), dh-python, python3-all, pybuild-plugin-pyproject, 
                 python3-hatchling, python3-pytest, python3-pytest-mock, python3-pytest-cov,
-                python3-parted, python3-fallocate,  python3-sphinx,
+                python3-parted, python3-fallocate,  python3-sphinx, python3-typing-extensions,
                 fdisk, dosfstools, e2fsprogs, mtools, cryptsetup-bin
 
 Files:
