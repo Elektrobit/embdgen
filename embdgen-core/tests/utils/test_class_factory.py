@@ -46,11 +46,14 @@ class TestConfig:
     def test_decorate(self):
         @Config('foo')
         @Config('bar', optional=True)
+        @Config('opt')
         @Config('foobar')
         @Config('barfoo')
+        @Config('optprop')
         class FooBar():
             foo: int
             bar: str
+            opt: Optional[int]
             foobar: list
 
             @property
@@ -58,19 +61,26 @@ class TestConfig:
             @barfoo.setter
             def barfoo(self, value: int): pass
 
-        assert len(Meta.get(FooBar)) == 4
-        assert Meta.get(FooBar)['foo'] == Meta("foo", int, optional=False)
+            @property
+            def optprop(self) -> Optional[int]: pass
+            @optprop.setter
+            def optprop(self, value: Optional[int]): pass
+
+        assert len(Meta.get(FooBar)) == 6
+        assert Meta.get(FooBar)['foo'] == Meta("foo", int)
         assert Meta.get(FooBar)['bar'] == Meta("bar", str, optional=True)
-        assert Meta.get(FooBar)['foobar'] == Meta("foobar", list, optional=False)
-        assert Meta.get(FooBar)['barfoo'] == Meta("barfoo", int, optional=False)
+        assert Meta.get(FooBar)['opt'] == Meta("opt", int, optional=True)
+        assert Meta.get(FooBar)['foobar'] == Meta("foobar", list)
+        assert Meta.get(FooBar)['barfoo'] == Meta("barfoo", int)
+        assert Meta.get(FooBar)['optprop'] == Meta("optprop", int, optional=True)
 
     def test_inheritance(self):
         assert len(Meta.get(Base)) == 1
-        assert Meta.get(Base)['foo'] == Meta("foo", int, "some doc", optional=False)
+        assert Meta.get(Base)['foo'] == Meta("foo", int, "some doc")
 
         assert len(Meta.get(Child1)) == 2
-        assert Meta.get(Child1)['foo'] == Meta("foo", int, "some doc", optional=False)
-        assert Meta.get(Child1)['bar'] == Meta("bar", str, "doc b", optional=False)
+        assert Meta.get(Child1)['foo'] == Meta("foo", int, "some doc")
+        assert Meta.get(Child1)['bar'] == Meta("bar", str, "doc b")
 
         assert len(Meta.get(Child2)) == 3
         assert Meta.get(Child2)['foo'] == Meta("foo", str, optional=True)
