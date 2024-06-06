@@ -131,7 +131,7 @@ class FactoryBase(abc.ABC, Generic[T]):
 
         if isclass(type_any):
             for cur_type_class, impl_class in cls.class_map().items():
-                if get_origin(cur_type_class) is list:
+                if get_origin(cur_type_class) in [list, dict]:
                     continue
                 if issubclass(type_any, cur_type_class):
                     return impl_class
