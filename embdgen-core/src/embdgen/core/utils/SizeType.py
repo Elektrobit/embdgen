@@ -56,7 +56,10 @@ class SizeType():
 
     _bytes: Optional[int]
 
-    def __init__(self, bytes_val = None) -> None:
+    def __init__(self, bytes_val: Optional[int] = None) -> None:
+        if bytes_val and not isinstance(bytes_val, int):
+            self._bytes = None
+            raise Exception(f"SizeType expects int, not {type(bytes_val).__name__}")
         self._bytes = bytes_val
 
     @classmethod

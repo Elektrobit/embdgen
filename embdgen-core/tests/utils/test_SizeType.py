@@ -237,3 +237,10 @@ class TestSizeType:
     def test_bytes(self):
         with pytest.raises(Exception, match="SizeType.bytes called, when value is undefined"):
             SizeType().bytes
+
+    def test_constructor(self):
+        with pytest.raises(Exception, match="SizeType expects int, not str"):
+            SizeType("abc")
+        assert SizeType(None).is_undefined
+        assert SizeType(1234).bytes == 1234
+        assert SizeType(4096).sectors == 8
