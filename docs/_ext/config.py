@@ -74,7 +74,7 @@ class EmbdgenConfigDirective(SphinxDirective):
             path = path.parent.parent
             if path.name == "src":
                 path = path.parent
-            doc = (cls.__doc__ or entry_type).splitlines()
+            doc = (cls.__doc__ or entry_type).strip().splitlines()
 
             title = doc[0]
             if entry_type:
@@ -109,7 +109,7 @@ class EmbdgenConfigDirective(SphinxDirective):
                 else:
                     realtype = meta.typecls
                     typename = meta.typecls.__name__
-                
+
                 content.append(("" if meta.optional else "(required) ") + f"``{key}`` : {typename}", "")
                 if not meta.doc:
                     content.append("    N/A", "")
