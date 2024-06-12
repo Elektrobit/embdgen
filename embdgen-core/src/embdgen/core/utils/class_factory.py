@@ -1,12 +1,20 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import abc
-from typing import Any, List, Type, Dict, Optional, Union, get_origin, get_args, Generic, TypeVar, get_type_hints
+from typing import Any, List, Tuple, Type, Dict, Optional, Union, get_origin, get_args, Generic, TypeVar, get_type_hints
 from inspect import isclass, signature
 from pkgutil import iter_modules
 from importlib import import_module
 from types import ModuleType
 from dataclasses import dataclass
+
+def unpack_optional(var: Type) -> Tuple[bool, Type]:
+    if get_origin(var) == Union:
+        args = get_args(var)
+        if len(args) == 2 and type(None) in args:
+            return True, next(filter(lambda x: x is not type(None), args))
+
+    return False, var
 
 @dataclass
 class Meta():
@@ -75,7 +83,8 @@ def Config(name: str, doc="", optional=False):
         if not local_doc:
             local_doc = try_read_doc(cls, name)
 
-        meta = Meta(name, hints[name], local_doc, optional)
+        optional_from_type, real_type = unpack_optional(hints[name])
+        meta = Meta(name, real_type, local_doc, optional or optional_from_type)
         Meta.set(cls, meta)
         return cls
     return decorate
@@ -110,12 +119,11 @@ class FactoryBase(abc.ABC, Generic[T]):
 
     @classmethod
     def by_type(cls, type_any: Any) -> Optional[Type[T]]:
+        optional, real_type = unpack_optional(type_any)
+        if optional:
+            type_any = real_type
         if get_origin(type_any) == Union:
-            args = get_args(type_any)
-            if len(args) == 2 and type(None) in args: # This is Optional[T]
-                type_any = next(filter(lambda x: x is not type(None), args))
-            else:
-                raise Exception(f"Unexpected type in {cls}.by_type: {type_any}")
+            raise Exception(f"Unexpected type in {cls}.by_type: {type_any}")
         impl_class = cls.class_map().get(type_any, None)
 
         if impl_class or not cls.ALLOW_SUBCLASS:
@@ -123,7 +131,7 @@ class FactoryBase(abc.ABC, Generic[T]):
 
         if isclass(type_any):
             for cur_type_class, impl_class in cls.class_map().items():
-                if get_origin(cur_type_class) is list:
+                if get_origin(cur_type_class) in [list, dict]:
                     continue
                 if issubclass(type_any, cur_type_class):
                     return impl_class
