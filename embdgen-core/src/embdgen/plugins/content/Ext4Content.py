@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import io
-import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -43,9 +42,10 @@ class Ext4Content(BinaryContent):
                 tmp_dir = Path(diro)
                 for file in self.content.files:
                     if file.is_dir():
-                        shutil.copytree(file, Path(tmp_dir) / file.name, dirs_exist_ok=True, copy_function=os.link)
+                        shutil.copytree(file, Path(tmp_dir) / file.name, dirs_exist_ok=True, ignore_dangling_symlinks=True)
                     else:
-                        os.link(str(file), str(Path(tmp_dir) / file.name))
+                        shutil.copyfile(str(file), str(Path(tmp_dir) / file.name))
+
 
                 FakeRoot(get_temp_file(), self.content.fakeroot).run([
                     "mkfs.ext4",
