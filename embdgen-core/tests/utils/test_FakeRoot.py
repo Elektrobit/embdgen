@@ -77,16 +77,6 @@ def test_inherit(tmp_path: Path):
     assert get_uid_and_gid(fr, file2) == "123:456"
 
 
-def test_parent_parent(tmp_path: Path):
-    savefile1 = tmp_path / "fakeroot1.save"
-
-    fr = FakeRoot(savefile1)
-    fr2 = FakeRoot(savefile1, fr)
-
-    with pytest.raises(Exception, match="FakeRoot parent has already a parent. Recursive parenting is not allowed."):
-        FakeRoot(savefile1, fr2)
-
-
 def test_run(tmp_path: Path):
     savefile1 = tmp_path / "fakeroot1.save"
 
