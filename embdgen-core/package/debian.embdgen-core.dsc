@@ -2,7 +2,7 @@ Format: 3.0 (native)
 Source: python-embdgen-core
 Binary: python3-embdgen-core
 Architecture: any
-Version: 0.1.0
+Version: 0.1.1
 Maintainer: AOX Technologies GmbH <info@aox.de>
 Standards-Version: 4.5.0
 Build-Depends: debhelper (>= 11), dh-python, python3-all, pybuild-plugin-pyproject, 
