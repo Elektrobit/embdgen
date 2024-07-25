@@ -15,6 +15,7 @@ from embdgen.core.utils.image import (BuildLocation, copy_sparse,
 
 
 @Config("content")
+@Config("size", optional=True)
 class Ext4Content(BinaryContent):
     """Ext4 Content
     """
