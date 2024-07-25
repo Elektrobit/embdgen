@@ -11,6 +11,7 @@ from embdgen.core.utils.image import copy_sparse, create_empty_image
 
 
 @Config("content")
+@Config("size", optional=True)
 class Fat32Content(BinaryContent):
     """Fat32 Content
 
@@ -29,7 +30,7 @@ class Fat32Content(BinaryContent):
 
     def prepare(self) -> None:
         if self.size.is_undefined:
-            raise Exception("Fat32 regions require a fixed size at the moment")
+            raise Exception("Fat32 content requires a fixed size at the moment")
         if self.content:
             self.content.prepare()
 

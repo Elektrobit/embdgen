@@ -46,7 +46,7 @@ class TestFat32Content:
         obj.content = FilesContent()
         obj.content.files = test_files
 
-        with pytest.raises(Exception, match="Fat32 regions require a fixed size at the moment"):
+        with pytest.raises(Exception, match="Fat32 content requires a fixed size at the moment"):
             obj.prepare()
         assert obj.size.is_undefined
 

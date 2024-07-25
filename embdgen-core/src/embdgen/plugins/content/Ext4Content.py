@@ -1,10 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
 import io
-import os
-import shutil
-import subprocess
 from pathlib import Path
+import subprocess
 from tempfile import TemporaryDirectory
 from typing import Optional
 
@@ -17,6 +15,7 @@ from embdgen.core.utils.image import (BuildLocation, copy_sparse,
 
 
 @Config("content")
+@Config("size", optional=True)
 class Ext4Content(BinaryContent):
     """Ext4 Content
     """
@@ -40,14 +39,12 @@ class Ext4Content(BinaryContent):
 
         if self.content:
             with TemporaryDirectory(dir=BuildLocation().path) as diro:
+                fr = FakeRoot(get_temp_file(), self.content.fakeroot)
                 tmp_dir = Path(diro)
                 for file in self.content.files:
-                    if file.is_dir():
-                        shutil.copytree(file, Path(tmp_dir) / file.name, dirs_exist_ok=True, copy_function=os.link)
-                    else:
-                        os.link(str(file), str(Path(tmp_dir) / file.name))
+                    fr.copy(file, tmp_dir)
 
-                FakeRoot(get_temp_file(), self.content.fakeroot).run([
+                fr.run([
                     "mkfs.ext4",
                     "-d", diro,
                     self.result_file

@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
-from functools import lru_cache
 import os
 from pathlib import Path
 import subprocess
@@ -9,15 +8,7 @@ from embdgen.plugins.content.ArchiveContent import ArchiveContent  # type: ignor
 from embdgen.core.utils.image import BuildLocation
 from embdgen.core.utils.FakeRoot import FakeRoot
 
-@lru_cache
-def cur_umask() -> int:
-    tmp = os.umask(0o022)
-    os.umask(tmp)
-    return tmp
-
-def calc_umask(mode: int) -> str:
-    mode = mode & ~cur_umask()
-    return f"{mode:o}"
+from ..test_utils.system import calc_umask
 
 def test_simple(tmp_path: Path):
     BuildLocation().set_path(tmp_path)
@@ -108,7 +99,7 @@ def test_fakeroot(tmp_path: Path):
 
     assert files == [
         ['a',    '123', '456', '777', '0',   '0'],
-        ['bar',  uid,   gid,   calc_umask(0o777), '0',   '0'],
-        ['foo',  uid,   gid,   calc_umask(0o666), '0',   '0'],
-        ['node', '0',   '0',   calc_umask(0o666), '123', '456']
+        ['bar',  uid,   gid,   f"{calc_umask(0o777):o}", '0',   '0'],
+        ['foo',  uid,   gid,   f"{calc_umask(0o666):o}", '0',   '0'],
+        ['node', '0',   '0',   f"{calc_umask(0o666):o}", '123', '456']
     ]

@@ -40,18 +40,23 @@ class DebugFs():
         size: int
         major: int
         minor: int
+        link_to: str
 
         @property
-        def is_dir(self):
+        def is_dir(self) -> bool:
             return stat.S_ISDIR(self.mode)
 
         @property
-        def is_reg(self):
+        def is_reg(self) -> bool:
             return stat.S_ISREG(self.mode)
 
         @property
-        def is_chr(self):
+        def is_chr(self) -> bool:
             return stat.S_ISCHR(self.mode)
+
+        @property
+        def is_lnk(self) -> bool:
+            return stat.S_ISLNK(self.mode)
 
     _image: Path
 
@@ -73,7 +78,7 @@ class DebugFs():
             _, mode, _, uid, gid, size, date, time, name = re.split(r"\s+", line, maxsplit=8)
             if name == "." or name == "..":
                 continue
-            out.append(DebugFs.Entry(name, int(mode, base=8), int(uid), int(gid), int(size), major, minor))
+            out.append(DebugFs.Entry(name, int(mode, base=8), int(uid), int(gid), int(size), major, minor, ""))
         return DebugFs.FileList(sorted(out, key=lambda x: x.name))
 
     def stat(self, path: str) -> Entry:
@@ -85,6 +90,7 @@ class DebugFs():
         if not res.stdout:
             return None
         major = minor = 0
+        link_to = ""
         for line in res.stdout.splitlines():
             line = line.strip()
             # EG: Inode: 12   Type: character special    Mode:  0664   Flags: 0x0
@@ -115,7 +121,10 @@ class DebugFs():
             if m:
                 major = int(m.group(1))
                 minor = int(m.group(2))
-        return DebugFs.Entry(Path(path).name, mode, uid, gid, size, major, minor)
+            m = re.search(r"Fast link dest: \"(.+?)\"", line)
+            if m:
+                link_to = m.group(1)
+        return DebugFs.Entry(Path(path).name, mode, uid, gid, size, major, minor, link_to)
 
 
 class Tune2Fs(SimpleCommandParser):
@@ -179,6 +188,8 @@ def test_from_archive_fakeroot(tmp_path: Path):
     archive = tmp_path / "archive.tar"
     test_dir = tmp_path / "test_dir"
     test_dir.mkdir()
+    sub_dir = test_dir / "sub_dir"
+    sub_dir.mkdir()
 
     fr = FakeRoot(get_temp_file())
 
@@ -193,6 +204,39 @@ def test_from_archive_fakeroot(tmp_path: Path):
         "chown",
         "123:456",
         test_dir / "node"
+    ])
+
+    fr.run([
+        "ln",
+        "-s",
+        "/var/run",
+        test_dir / "abs_link",
+    ])
+
+    fr.run([
+        "chown",
+        "567:890",
+        sub_dir
+    ])
+
+    fr.run([
+        "mknod",
+        sub_dir / "node",
+        "c",
+        str(0x123), str(0x456)
+    ])
+
+    fr.run([
+        "chown",
+        "123:456",
+        sub_dir / "node"
+    ])
+
+    fr.run([
+        "ln",
+        "-s",
+        "/var/run",
+        sub_dir / "abs_link",
     ])
 
     fr.run([
@@ -213,6 +257,10 @@ def test_from_archive_fakeroot(tmp_path: Path):
 
     dfs = DebugFs(image)
 
+    subdir_stat = dfs.stat("sub_dir")
+    assert subdir_stat.uid == 567
+    assert subdir_stat.gid == 890
+
     node_stat = dfs.stat("node")
     assert node_stat.uid == 123
     assert node_stat.gid == 456
@@ -220,6 +268,20 @@ def test_from_archive_fakeroot(tmp_path: Path):
     assert node_stat.major == 0x123
     assert node_stat.minor == 0x456
 
+    node_stat = dfs.stat("sub_dir/node")
+    assert node_stat.uid == 123
+    assert node_stat.gid == 456
+    assert node_stat.is_chr
+    assert node_stat.major == 0x123
+    assert node_stat.minor == 0x456
+
+    link_stat = dfs.stat("abs_link")
+    assert link_stat.is_lnk
+    assert link_stat.link_to == "/var/run"
+
+    link_stat = dfs.stat("sub_dir/abs_link")
+    assert link_stat.is_lnk
+    assert link_stat.link_to == "/var/run"
 
 def test_empty_ext4(tmp_path: Path) -> None:
     BuildLocation().set_path(tmp_path)
