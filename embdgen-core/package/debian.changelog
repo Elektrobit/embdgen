@@ -1,3 +1,11 @@
+python-embdgen-core (0.1.1) unstable; urgency=medium
+
+  * Fix Ext4Content from Archive having several issues with symlinks
+  * Allow size property for Ext4Content and Fat32Content
+
+ -- AOX Technologies GmbH <info@aox.de>  Thu, 25 Jul 2024 09:00:00 +0000
+
+
 python-embdgen-core (0.1.0) unstable; urgency=medium
 
   * Initial package
