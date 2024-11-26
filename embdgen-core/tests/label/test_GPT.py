@@ -1,9 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 
-from typing import List
-import re
-import subprocess
-from dataclasses import dataclass
+from pathlib import Path
 import pytest
 
 from embdgen.core.utils.image import BuildLocation
@@ -12,65 +9,14 @@ from embdgen.core.utils.SizeType import SizeType
 from embdgen.plugins.label.GPT import GPT
 from embdgen.plugins.region.EmptyRegion import EmptyRegion
 from embdgen.plugins.region.PartitionRegion import PartitionRegion
+from embdgen.plugins.content.EmptyContent import EmptyContent
 
 from embdgen.plugins.region.RawRegion import RawRegion
 from embdgen.plugins.content.RawContent import RawContent
 from embdgen.plugins.content.FilesContent import FilesContent
 from embdgen.plugins.content.Fat32Content import Fat32Content
 
-@dataclass
-class FdiskRegion:
-    start_sector: int
-    end_sector: int
-    sectors: int
-
-
-class FdiskParser:
-    is_valid: bool = False
-    regions: List[FdiskRegion]
-
-    def __init__(self, image):
-        self.regions = []
-        ret = subprocess.run([
-            'fdisk',
-            '-l',
-            image
-        ], stdout=subprocess.PIPE, check=False, encoding="ascii")
-        if ret.returncode == 0:
-            self.is_valid = True
-        self._parse(ret.stdout)
-
-    def _parse(self, output: str):
-        """
-        Units: sectors of 1 * 512 = 512 bytes
-        Sector size (logical/physical): 512 bytes / 512 bytes
-        I/O size (minimum/optimal): 512 bytes / 512 bytes
-        Disklabel type: gpt
-        Disk identifier: 5C51AF51-0A45-4144-A6EC-A2DA8B6317D5
-
-        Device     Start   End Sectors Size Type
-        image.raw1  3856  5903    2048   1M EFI System
-        image.raw2  5904 16143   10240   5M Microsoft basic data
-
-
-        """
-        in_regions = False
-        for line in output.splitlines():
-            if in_regions:
-                parts = re.split(r"\s+", line)
-                _, start, end, sectors, _, *_ = parts
-                self.regions.append(FdiskRegion(
-                    int(start),
-                    int(end),
-                    int(sectors),
-                ))
-
-            else:
-                if line.startswith("Disk identifier:"):
-                    self.diskid = int((line.split(":")[1]).split("-")[0], 16)
-                elif line.startswith("Device"):
-                    in_regions = True
-
+from ..test_utils.FdiskParser import FdiskParser, FdiskRegion
 
 class TestGPT:
     def test_withParts(self, tmp_path):
