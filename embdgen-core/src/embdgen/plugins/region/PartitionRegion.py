@@ -19,7 +19,10 @@ class PartitionRegion(BaseContentRegion):
     """Content of this Region"""
 
     fstype: str
-    """Filesystem type of this region (e.g. ext4, fat32)"""
+    """
+    Filesystem type of this region (e.g. ext4, fat32)
+    An EFI system partition for gpt and mbr partition tables can be created with "esp"
+    """
 
     def write(self, out_file: BufferedIOBase):
         out_file.seek(self.start.bytes)
