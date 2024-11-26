@@ -16,11 +16,13 @@ from embdgen.core.utils.SizeType import SizeType
 class MInfo(SimpleCommandParser):
     ATTRIBUTE_MAP =  {
         "sector size": ("sector_size", lambda x: int(x.split()[0])),
-        "big size": ("sectors", lambda x: int(x.split()[0]))
+        "big size": ("sectors", lambda x: int(x.split()[0])),
+        "disk type": ("disk_type", lambda x: x[1:-1].strip())
     }
 
     sectors: int = -1
     sector_size: int = -1
+    disk_type: str = ""
 
     def __init__(self, image: Path) -> None:
         super().__init__(["minfo", "-i", image])
@@ -50,12 +52,12 @@ class TestFat32Content:
             obj.prepare()
         assert obj.size.is_undefined
 
-        obj.size = SizeType.parse("10MB")
+        obj.size = SizeType.parse("32MB")
         obj.prepare()
 
         with image.open("wb") as out_file:
             obj.write(out_file)
-        assert image.stat().st_size == SizeType.parse("10MB").bytes
+        assert image.stat().st_size == SizeType.parse("32MB").bytes
 
         res = subprocess.run([
             "mdir",
@@ -79,3 +81,17 @@ class TestFat32Content:
         minfo = MInfo(image)
         assert minfo.ok, minfo.error
 
+    def test_type_small(self, tmp_path: Path) -> None:
+        BuildLocation().set_path(tmp_path)
+        image = tmp_path / "image"
+
+        obj = Fat32Content()
+        obj.size = SizeType.parse("10 MB")
+        obj.prepare()
+
+        with image.open("wb") as out_file:
+            obj.write(out_file)
+
+        minfo = MInfo(image)
+        assert minfo.ok, minfo.error
+        assert minfo.disk_type == "FAT32"

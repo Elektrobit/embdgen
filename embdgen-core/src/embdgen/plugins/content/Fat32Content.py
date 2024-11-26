@@ -40,6 +40,7 @@ class Fat32Content(BinaryContent):
 
         subprocess.run([
                 "mkfs.vfat",
+                "-F", "32",
                 self.result_file
             ],
             check=True,

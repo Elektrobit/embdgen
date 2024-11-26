@@ -21,7 +21,7 @@ class SimpleCommandParser(abc.ABC):
         self.ok = ret.returncode == 0
 
         for line in ret.stdout.splitlines():
-            splits = re.split(r":\s+", line.strip(), 1)
+            splits = re.split(r"[:=]", line.strip(), 1)
             if len(splits) != 2:
                 continue
             key, value = splits
