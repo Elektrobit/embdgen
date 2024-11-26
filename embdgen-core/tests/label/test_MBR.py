@@ -155,3 +155,22 @@ class TestMBR:
             pos += SizeType.parse("1MB").sectors
             if i == 4:
                 pos += 12 # Empty partition
+
+    def test_efi_system(self, tmp_path: Path) -> None:
+        image = tmp_path / "image"
+        obj = MBR()        
+
+        esp = PartitionRegion()
+        esp.name = "EFI system partition"
+        esp.size = SizeType.parse("100 MB")
+        esp.fstype = "esp"
+        esp.content = EmptyContent()
+
+        obj.parts.append(esp)
+
+        obj.prepare()
+        obj.create(image)
+
+        fdisk = FdiskParser(image)
+        assert fdisk.is_valid
+        assert fdisk.regions[0].type_id == FdiskRegion.TYPE_ESP

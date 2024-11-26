@@ -273,3 +273,22 @@ class TestGPT:
         assert output_w_offset_2 == (b"DATA" * 512)
         output = capsys.readouterr().out
         assert output == "The location for the GPT Partition Table is used by another region. Table will be relocated\n"
+
+    def test_efi_system(self, tmp_path: Path) -> None:
+        image = tmp_path / "image"
+        obj = GPT()        
+
+        esp = PartitionRegion()
+        esp.name = "EFI system partition"
+        esp.size = SizeType.parse("100 MB")
+        esp.fstype = "esp"
+        esp.content = EmptyContent()
+
+        obj.parts.append(esp)
+
+        obj.prepare()
+        obj.create(image)
+
+        fdisk = FdiskParser(image)
+        assert fdisk.is_valid
+        assert fdisk.regions[0].type_id == FdiskRegion.TYPE_ESP

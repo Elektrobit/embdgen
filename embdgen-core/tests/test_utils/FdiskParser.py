@@ -8,7 +8,7 @@ class FdiskRegion:
     TYPE_FAT32_LBA = 0x0C
     TYPE_LINUX_NATIVE = 0x83
     TYPE_EXTENDED = 0x05
-    TYPE_EFS = 0xEF
+    TYPE_ESP = 0xEF
 
     start_sector: int
     end_sector: int
@@ -71,7 +71,7 @@ class FdiskParser:
                 elif self.label_type == "gpt":
                     type_id = " ".join([type_id, *type_id_ext]).lower()
                     if type_id == "efi system":
-                        type_id = FdiskRegion.TYPE_EFS
+                        type_id = FdiskRegion.TYPE_ESP
                     elif type_id == "microsoft basic data":
                         type_id = FdiskRegion.TYPE_FAT32_LBA
                     else:

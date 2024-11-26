@@ -13,6 +13,12 @@ from embdgen.core.utils.image import create_empty_image
 from ..utils.class_factory import Config
 from ..region import BaseRegion
 
+# pyparted built against libparted 3.4 has a bug and does not export PARTITION_ESP
+# If pyparted is built against libparted 3.5.28, it should be defined
+# See https://github.com/bcl/parted/commit/aa690ee275db86d1edb2468bcf31c3d7cf81228e
+if not hasattr(parted, "PARTITION_ESP"):
+    parted.PARTITION_ESP = 18
+
 class PartedInterface:
     """
     Contextmanager interface to parted label creation.
@@ -53,12 +59,14 @@ class PartedInterface:
             disk=self._disk,
             type=parted.PARTITION_LOGICAL if logical else parted.PARTITION_NORMAL,
             geometry=geometry,
-            fs=parted.FileSystem(part.fstype, geometry=geometry)
+            fs=parted.FileSystem(part.fstype == "esp" and "fat32" or part.fstype, geometry=geometry)
         )
         if boot_partition:
             partition.setFlag(parted.PARTITION_BOOT)
         if self._label_type == "msdos":
             partition.setFlag(parted.PARTITION_LBA)
+        if part.fstype == "esp":
+            partition.setFlag(parted.PARTITION_ESP)
         self._disk.addPartition(partition=partition, constraint=parted.Constraint(exactGeom=geometry))
 
 @Config('parts')
