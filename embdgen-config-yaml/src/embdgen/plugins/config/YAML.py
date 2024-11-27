@@ -10,7 +10,7 @@ from embdgen.plugins.config.yaml.validator.Label import Label as LabelValidator
 from embdgen.plugins.config.yaml.validator.ContentGenerator import ContentGenerator as ContentGeneratorValidator
 from embdgen.plugins.config.yaml.ContentRegistry import ContentRegistry
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 class YAML(BaseConfig):
     CONFIG_TYPE = "yaml"
