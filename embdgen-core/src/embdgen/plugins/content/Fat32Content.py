@@ -53,6 +53,7 @@ class Fat32Content(BinaryContent):
                     [
                         "mcopy",
                         "-i", self.result_file,
+                        "-s", # recursive copy
                         file, "::"
                     ],
                     stdout=subprocess.PIPE,

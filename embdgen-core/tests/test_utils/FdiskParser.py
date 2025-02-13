@@ -8,6 +8,7 @@ class FdiskRegion:
     TYPE_FAT32_LBA = 0x0C
     TYPE_LINUX_NATIVE = 0x83
     TYPE_EXTENDED = 0x05
+    TYPE_EXTENDED_LBA = 0x0F
     TYPE_ESP = 0xEF
 
     start_sector: int

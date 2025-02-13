@@ -50,6 +50,7 @@ class PartedInterface:
             type=parted.PARTITION_EXTENDED,
             geometry=geometry
         )
+        partition.setFlag(parted.PARTITION_LBA)
         self._disk.addPartition(partition=partition, constraint=parted.Constraint(exactGeom=geometry))
 
     def add_partition(self, part: PartitionRegion, logical: bool=False, boot_partition: bool=False):
@@ -63,7 +64,7 @@ class PartedInterface:
         )
         if boot_partition:
             partition.setFlag(parted.PARTITION_BOOT)
-        if self._label_type == "msdos":
+        if self._label_type == "msdos" and partition.isFlagAvailable(parted.PARTITION_LBA):
             partition.setFlag(parted.PARTITION_LBA)
         if part.fstype == "esp":
             partition.setFlag(parted.PARTITION_ESP)
