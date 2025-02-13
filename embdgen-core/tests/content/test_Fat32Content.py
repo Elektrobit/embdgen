@@ -7,10 +7,11 @@ import pytest
 
 from ..test_utils import SimpleCommandParser
 
-from embdgen.plugins.content.FilesContent import FilesContent
-from embdgen.plugins.content.Fat32Content import Fat32Content
 from embdgen.core.utils.image import BuildLocation
 from embdgen.core.utils.SizeType import SizeType
+from embdgen.plugins.content.ArchiveContent import ArchiveContent
+from embdgen.plugins.content.Fat32Content import Fat32Content
+from embdgen.plugins.content.FilesContent import FilesContent
 
 
 class MInfo(SimpleCommandParser):
@@ -29,6 +30,21 @@ class MInfo(SimpleCommandParser):
     def size(self) -> int:
         return self.sectors * self.sector_size
 
+class MDir:
+    def __init__(self, image: Path) -> None:
+        res = subprocess.run([
+            "mdir",
+            "-/",
+            "-i", image,
+            "-b"
+        ], stdout=subprocess.PIPE, check=True, encoding="ascii")
+
+        # output is
+        # ::/filea
+        # ::/dir/fileb
+        # ...
+
+        self.files = sorted(map(lambda x: x[3:], res.stdout.splitlines()))
 
 class TestFat32Content:
     def test_files(self, tmp_path: Path):
@@ -56,14 +72,7 @@ class TestFat32Content:
         with image.open("wb") as out_file:
             obj.write(out_file)
         assert image.stat().st_size == SizeType.parse("10MB").bytes
-
-        res = subprocess.run([
-            "mdir",
-            "-i", image,
-            "-b"
-        ], stdout=subprocess.PIPE, check=True, encoding="ascii")
-
-        assert sorted(map(lambda x: x[3:], res.stdout.splitlines())) == sorted(map(lambda x: x.name, test_files))
+        assert MDir(image).files == sorted(map(lambda x: x.name, test_files))
 
     def test_empty(self, tmp_path: Path) -> None:
         BuildLocation().set_path(tmp_path)
@@ -79,3 +88,43 @@ class TestFat32Content:
         minfo = MInfo(image)
         assert minfo.ok, minfo.error
 
+    def test_archive(self, tmp_path: Path) -> None:
+        BuildLocation().set_path(tmp_path)
+
+        prepare_dir = tmp_path / "prepare"
+        archive = tmp_path / "archive.tar"
+        image = tmp_path / "image"
+
+        prepare_dir.mkdir()
+        (prepare_dir / "foo").write_text("foo")
+        (prepare_dir / "bar").mkdir()
+        (prepare_dir / "bar" / "baz").mkdir()
+        (prepare_dir / "bar" / "baz" / "a").touch()
+        (prepare_dir / "bar" / "baz" / "b").touch()
+
+        subprocess.run([
+            "tar",
+            "-cf",
+            archive,
+            "."
+        ], check=True, cwd=prepare_dir)
+
+        obj = Fat32Content()
+        obj.size = SizeType.parse("100 MB")
+        arc = ArchiveContent()
+        arc.archive = archive
+        obj.content = arc
+        obj.prepare()
+
+        with image.open("wb") as out_file:
+            obj.write(out_file)
+
+        minfo = MInfo(image)
+        assert minfo.ok
+        assert MDir(image).files == [
+            'bar/',
+            'bar/baz/',
+            'bar/baz/a',
+            'bar/baz/b',
+            'foo'
+        ]
