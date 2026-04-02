@@ -147,7 +147,7 @@ class TestMBR:
             assert fdisk.regions[i].type_id == FdiskRegion.TYPE_LINUX_NATIVE
             assert fdisk.regions[i].start_sector == pos
             pos += SizeType.parse("1MB").sectors
-        assert fdisk.regions[3].type_id == FdiskRegion.TYPE_EXTENDED
+        assert fdisk.regions[3].type_id == FdiskRegion.TYPE_EXTENDED_LBA
         for i in range(4, 8):
             pos += 1
             assert fdisk.regions[i].type_id == FdiskRegion.TYPE_LINUX_NATIVE
